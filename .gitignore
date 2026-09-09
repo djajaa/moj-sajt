@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local tooling / stray build cache leftover
+/.claude/
+/moj-sajt/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
