@@ -4,7 +4,7 @@ import { UtilityHeader, UtilityFooter, Breadcrumbs } from "../_components/Utilit
 
 export const metadata: Metadata = {
   title: "Uslovi korišćenja",
-  description: "Uslovi saradnje sa Sergejom Janjićem — usluge, plaćanje, otkazivanje termina i odgovornost.",
+  description: "Uslovi saradnje sa Sergejom Janjićem: usluge, plaćanje, otkazivanje termina i odgovornost.",
   alternates: { canonical: "https://sergejjanjic.com/terms" },
   robots: { index: true, follow: true },
 };
@@ -42,14 +42,14 @@ export default function TermsPage() {
             <p>
               Nudim 1:1 personalni trening, uživo u Banja Luci ili online, uključujući izradu individualnog
               plana treninga, praćenje napretka i korekcije po potrebi. Sajt služi za predstavljanje usluge i
-              prvi kontakt — sama saradnja i njeni detalji dogovaraju se direktno, van sajta.
+              prvi kontakt. Sama saradnja i njeni detalji dogovaraju se direktno, van sajta.
             </p>
           </Section>
 
           <Section n="02" title="Cijena i plaćanje">
             <p>
               Cijena zavisi od cilja, dinamike i vrste saradnje (uživo/online) i dogovara se nakon uvodnog
-              razgovora — na sajtu namjerno nema fiksnog cjenovnika, jer se svaki plan pravi za konkretnu osobu.
+              razgovora. Na sajtu namjerno nema fiksnog cjenovnika, jer se svaki plan pravi za konkretnu osobu.
               Način i dinamika plaćanja se dogovaraju prije početka saradnje.
             </p>
           </Section>
@@ -57,7 +57,7 @@ export default function TermsPage() {
           <Section n="03" title="Otkazivanje i pomjeranje termina">
             <p>
               Termin uživo treninga otkazuj ili pomjeri najkasnije nekoliko sati unaprijed, uz najavu putem
-              telefona ili WhatsApp-a — kasno otkazivanje bez najave može se računati kao iskorišćen termin.
+              telefona ili WhatsApp-a. Kasno otkazivanje bez najave može se računati kao iskorišćen termin.
               Za online saradnju, dinamika je fleksibilnija i dogovara se individualno.
             </p>
           </Section>
@@ -78,7 +78,7 @@ export default function TermsPage() {
           <Section n="05" title="Rezultati">
             <p>
               Rezultati prikazani na sajtu (transformacije, brojke) stvarni su i pripadaju konkretnim klijentima,
-              ali nisu garancija — napredak zavisi od doslednosti, ishrane, sna, genetike i truda svake osobe
+              ali nisu garancija. Napredak zavisi od doslednosti, ishrane, sna, genetike i truda svake osobe
               pojedinačno. Ne obećavam konkretan rezultat u konkretnom roku.
             </p>
           </Section>
@@ -93,7 +93,7 @@ export default function TermsPage() {
 
           <Section n="07" title="Prekid saradnje">
             <p>
-              Bilo koja strana može prekinuti saradnju u bilo kom trenutku, uz razuman rok obavještenja — u tom
+              Bilo koja strana može prekinuti saradnju u bilo kom trenutku, uz razuman rok obavještenja. U tom
               slučaju se rješavaju samo obaveze koje su već nastale (npr. iskorišćeni ili plaćeni termini).
             </p>
           </Section>

@@ -22,7 +22,7 @@ export default function ThankYouPage() {
             Hvala. <span className="font-serif italic font-normal text-theme">Javljam se uskoro.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-md leading-8 text-white/60">
-            Otvoren ti je mail sa pripremljenom porukom — provjeri da li je stvarno poslana. Trudim se da
+            Otvoren ti je mail sa pripremljenom porukom. Provjeri da li je stvarno poslana. Trudim se da
             odgovorim u roku od 24h.
           </p>
 

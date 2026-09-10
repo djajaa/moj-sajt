@@ -36,21 +36,21 @@ export default function PrivacyPage() {
           <p className="mb-14 max-w-2xl leading-8 text-txt">
             Ovaj sajt vodi Sergej Janjić, personalni trener u Banja Luci. Ova stranica objašnjava, jednostavnim
             jezikom, koji se podaci prikupljaju kad posjetiš sergejjanjic.com i šta se sa njima dešava. Nema
-            sitnih slova — pročitaj do kraja, traje dvije minute.
+            sitnih slova. Pročitaj do kraja, traje dvije minute.
           </p>
 
           <Section n="01" title="Koje podatke prikupljam">
             <p>
               Ovaj sajt nema bazu podataka, naloge ni prijavu. Jedini podaci koje ostavljaš su oni koje sâm
               upišeš u kontakt formu na početnoj strani: ime, telefon (opciono), vrsta saradnje, cilj i poruka.
-              Ništa se ne prikuplja automatski u pozadini — nema praćenja pokreta miša, nema fingerprinting-a,
+              Ništa se ne prikuplja automatski u pozadini: nema praćenja pokreta miša, nema fingerprinting-a,
               nema prodaje podataka trećim licima, jer ih uopšte i ne čuvam.
             </p>
           </Section>
 
           <Section n="02" title="Šta se dešava kad pošalješ poruku">
             <p>
-              Kad klikneš &bdquo;Pošalji poruku&ldquo;, forma ne šalje ništa na server — ona samo otvori tvoj
+              Kad klikneš &bdquo;Pošalji poruku&ldquo;, forma ne šalje ništa na server. Ona samo otvori tvoj
               vlastiti mail program (Gmail, Outlook, Mail...) sa već popunjenim tekstom. Poruka stiže do mene
               tek kad je ti stvarno pošalješ iz svog naloga. Isto važi za dugme WhatsApp: ono otvara direktan
               razgovor sa mnom preko WhatsApp aplikacije, ne prolazi kroz ovaj sajt.
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
           <Section n="03" title="Kolačići">
             <p>
               Sajt ne koristi kolačiće za praćenje niti za oglašavanje. Za osnovnu, anonimnu statistiku posjeta
-              (koliko ljudi otvori sajt, sa kog uređaja) koristim Vercel Analytics — servis koji ne koristi
+              (koliko ljudi otvori sajt, sa kog uređaja) koristim Vercel Analytics, servis koji ne koristi
               kolačiće i ne prikuplja lične podatke, pa banner za saglasnost nije potreban.
             </p>
           </Section>
@@ -72,14 +72,14 @@ export default function PrivacyPage() {
             <p>
               Sajt sadrži linkove ka Instagramu, WhatsApp-u i Google Mapama. Kad klikneš na njih, napuštaš ovaj
               sajt i primjenjuje se politika privatnosti tog servisa (Meta za Instagram i WhatsApp, Google za
-              Mape) — ja nemam uvid niti kontrolu nad tim šta se tamo dešava sa tvojim podacima.
+              Mape). Nemam uvid niti kontrolu nad tim šta se tamo dešava sa tvojim podacima.
             </p>
           </Section>
 
           <Section n="05" title="Fotografije klijenata">
             <p>
               Transformacije prikazane u sekciji &bdquo;Rezultati&ldquo; objavljene su uz saglasnost klijenata
-              čije su. Ako si klijent i želiš da tvoja slika bude uklonjena sa sajta, javi se — skidam je u roku
+              čije su. Ako si klijent i želiš da tvoja slika bude uklonjena sa sajta, javi se, skidam je u roku
               od nekoliko dana.
             </p>
           </Section>
@@ -87,8 +87,8 @@ export default function PrivacyPage() {
           <Section n="06" title="Tvoja prava">
             <p>
               Pošto ne čuvam podatke na serveru, nema ništa za brisanje van onoga što se nalazi u tvojoj
-              prepisci sa mnom (mail ili WhatsApp) — tu prepisku možeš obrisati kad god želiš, sa svoje strane.
-              Ako imaš pitanje šta se dešava sa informacijom koju si mi poslao/la, samo pitaj — odgovaram lično.
+              prepisci sa mnom (mail ili WhatsApp). Tu prepisku možeš obrisati kad god želiš, sa svoje strane.
+              Ako imaš pitanje šta se dešava sa informacijom koju si mi poslao/la, samo pitaj. Odgovaram lično.
             </p>
           </Section>
 

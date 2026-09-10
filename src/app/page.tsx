@@ -32,23 +32,23 @@ const MARQUEE_WORDS = [
 const FAQS = [
   {
     q: "Da li mi treba prethodno iskustvo sa treningom?",
-    a: "Ne. Radim i sa ljudima koji nikad nisu bili u teretani i sa onima koji treniraju godinama — plan se pravi prema tvom nivou, ne obrnuto.",
+    a: "Ne. Radim i sa ljudima koji nikad nisu bili u teretani i sa onima koji treniraju godinama. Plan se pravi prema tvom nivou, ne obrnuto.",
   },
   {
     q: "Kad mogu očekivati prve rezultate?",
-    a: "Prve promjene u snazi i osjećaju obično se vide za 3–4 nedjelje. Vidljiva promjena izgleda traje duže i zavisi od cilja, doslednosti i polazne tačke — zato ne dajem univerzalan broj.",
+    a: "Prve promjene u snazi i osjećaju obično se vide za 3–4 nedjelje. Vidljiva promjena izgleda traje duže i zavisi od cilja, doslednosti i polazne tačke, zato ne dajem univerzalan broj.",
   },
   {
     q: "Koja je razlika između uživo i online saradnje?",
-    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video-provjere forme — biraš prema tome gdje živiš i šta ti više odgovara.",
+    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video-provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
   },
   {
     q: "Koliko košta saradnja?",
-    a: "Zavisi od cilja, učestalosti i vrste saradnje, pa cijenu dogovaramo nakon kratkog razgovora — ne postoji fiksni paket za sve.",
+    a: "Zavisi od cilja, učestalosti i vrste saradnje, pa cijenu dogovaramo nakon kratkog razgovora. Ne postoji fiksni paket za sve.",
   },
   {
     q: "Šta ako imam povredu ili zdravstveno ograničenje?",
-    a: "Javi mi prije početka. Plan se prilagođava onome što tvoje tijelo trenutno može, a ne obrnuto — bezbjednost dolazi prije napretka.",
+    a: "Javi mi prije početka. Plan se prilagođava onome što tvoje tijelo trenutno može, a ne obrnuto. Bezbjednost dolazi prije napretka.",
   },
 ];
 
@@ -81,7 +81,7 @@ const LOCAL_BUSINESS_SCHEMA = {
 
 const TESTIMONIALS = [
   { src: "/images/transformations/client-1.png", name: "Aleksa",  quote: "Trenirao sam profesionalno godinama i mislio da znam sve o treningu. Sergej mi je za mjesec dana pokazao koliko sam pogrešno radio bazu." },
-  { src: "/images/transformations/client-2.png", name: "Luka",    quote: "Znao sam šta treba da radim, samo nisam imao ko da me drži za riječ. Sad nemam izgovor — primijeti odmah kad počnem da popuštam." },
+  { src: "/images/transformations/client-2.png", name: "Luka",    quote: "Znao sam šta treba da radim, samo nisam imao ko da me drži za riječ. Sad nemam izgovor: primijeti odmah kad počnem da popuštam." },
   { src: "/images/transformations/client-3.jpg", name: "Marko",   quote: "104kg → 84kg za sedam mjeseci, bez gladovanja i bez ijedne povrede. Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim." },
   { src: "/images/transformations/client-4.png", name: "Jovan",   quote: "Gledam slike od prije godinu dana i ne prepoznajem se. Nisam očekivao da ću ikad ovako izgledati, a kamoli da ću uživati u procesu." },
   { src: "/images/transformations/client-5.png", name: "Danilo",  quote: "Na prvom treningu mi je Sergej objasnio tačno šta radimo i zašto. Poslije toliko pokušaja sa programima sa interneta, to mi je bilo skoro čudno." },
@@ -1096,7 +1096,7 @@ export default function Home() {
 
             <Reveal delay={340}>
               <p className="mt-8 max-w-xl text-base leading-8 text-white/70 sm:text-lg">
-                Ne dobijaš gotov program sa interneta. Dobijaš plan pisan za tebe, treniraš sa jasnim ciljem i znaš tačno zašto radiš ono što radiš — iz nedjelje u nedjelju, bez lutanja.
+                Ne dobijaš gotov program sa interneta. Dobijaš plan pisan za tebe, treniraš sa jasnim ciljem i znaš tačno zašto radiš ono što radiš, iz nedjelje u nedjelju, bez lutanja.
               </p>
             </Reveal>
 
@@ -1175,10 +1175,10 @@ export default function Home() {
                 </div>
 
                 <p className="mt-7 max-w-xl leading-8 text-txt">
-                  Vidio sam dovoljno ljudi da odustanu poslije dvije nedjelje ekstremne dijete da više ne vjerujem u prečice. Radi jasan plan, iskrena komunikacija i tempo koji možeš da izdržiš — ne tri mjeseca, nego trajno.
+                  Vidio sam dovoljno ljudi da odustanu poslije dvije nedjelje ekstremne dijete da više ne vjerujem u prečice. Radi jasan plan, iskrena komunikacija i tempo koji možeš da izdržiš, ne tri mjeseca nego trajno.
                 </p>
                 <p className="mt-4 max-w-xl leading-8 text-txt">
-                  Na treningu sam miran i precizan. Ne vičem, ne motivišem parolama — pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
+                  Na treningu sam miran i precizan. Ne vičem, ne motivišem parolama. Pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
                 </p>
               </Reveal>
 
@@ -1226,7 +1226,7 @@ export default function Home() {
             </div>
 
             <p className="mb-14 max-w-3xl leading-8 text-txt">
-              Sve je 1:1 — uživo ili online. Prvo pričamo o cilju i rasporedu, onda gradim
+              Sve je 1:1, uživo ili online. Prvo pričamo o cilju i rasporedu, onda gradim
               sistem koji možeš da održavaš i kad ti se raspored raspadne. Cijena se dogovara poslije kratkog poziva.
             </p>
           </Reveal>
@@ -1234,7 +1234,7 @@ export default function Home() {
           <div className="grid gap-6 md:grid-cols-3">
             {[
               { num: "01", title: "Start & procjena",     desc: "Prije prvog treninga pričamo o cilju, navikama, rasporedu i onome što ti realno stoji na putu. Plan se pravi oko tebe, ne obrnuto." },
-              { num: "02", title: "Plan & progres",        desc: "Nema kopiranih programa sa interneta. Svaka nedjelja je smišljena za tebe, sa jasnom progresijom — znaš tačno šta radiš i zašto."        },
+              { num: "02", title: "Plan & progres",        desc: "Nema kopiranih programa sa interneta. Svaka nedjelja je smišljena za tebe, sa jasnom progresijom: znaš tačno šta radiš i zašto."        },
               { num: "03", title: "Praćenje & korekcije", desc: "Plan je samo početak. Pratim svaki trening, mijenjam ono što ne radi i javljam se prije nego što ti stigneš da odustaneš." },
             ].map((item, i) => (
               <Reveal key={item.num} delay={i * 120} className="h-full">
@@ -1307,7 +1307,7 @@ export default function Home() {
               <div className="gt-cut-lg relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
                 <Image
                   src="/images/transformations/client-3.jpg"
-                  alt="Marko prije i poslije transformacije — sa 104kg na 84kg"
+                  alt="Marko prije i poslije transformacije, sa 104kg na 84kg"
                   fill
                   sizes="(max-width: 1024px) 90vw, 480px"
                   className="object-cover"
@@ -1337,7 +1337,7 @@ export default function Home() {
                 <Reveal delay={160}>
                   <div>
                     <h4 className="mb-2 text-header">Pristup</h4>
-                    <p className="leading-7 text-txt">Krenuli smo polako — tri treninga sedmično i plan ishrane koji nije zahtijevao gladovanje, uz redovne korekcije kad je motivacija padala. Brzina nikad nije išla na račun doslednosti.</p>
+                    <p className="leading-7 text-txt">Krenuli smo polako: tri treninga sedmično i plan ishrane koji nije zahtijevao gladovanje, uz redovne korekcije kad je motivacija padala. Brzina nikad nije išla na račun doslednosti.</p>
                   </div>
                 </Reveal>
                 <Reveal delay={240}>
@@ -1392,7 +1392,7 @@ export default function Home() {
               <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
 
               <p className="mt-6 max-w-xl leading-8 text-white/65">
-                Prvi razgovor je besplatan i bez obaveze — pričamo o cilju i vidimo da li se uklapamo.
+                Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju i vidimo da li se uklapamo.
                 Ako da, kreće plan. Ako ne, bar znaš na čemu si.
               </p>
             </Reveal>
@@ -1574,7 +1574,7 @@ export default function Home() {
                 style={{ border: 0 }}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Lokacija — Sergej Janjić Personal Coaching"
+                title="Lokacija Sergeja Janjića (Personal Coaching)"
               />
               <a
                 href={MAPS_LINK}
@@ -1635,7 +1635,7 @@ export default function Home() {
 
                 <p className="mb-7 max-w-sm text-sm leading-7 text-white/55">
                   1:1 coaching • uživo i online • Banja Luka. Mirno, precizno i
-                  sistemski — da napredak bude stabilan, ne slučajan.
+                  sistemski, da napredak bude stabilan, ne slučajan.
                 </p>
 
                 <div className="flex flex-wrap gap-3">
