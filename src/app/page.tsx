@@ -826,46 +826,64 @@ export default function Home() {
           ? "bg-white/96 shadow-[0_8px_32px_rgba(0,0,0,0.10)] backdrop-blur-xl"
           : "bg-[#08090b]/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
       }`}>
-        <div className={`${cx} flex items-center justify-between py-4 lg:py-3`}>
+        <div className={`${cx} py-4 lg:py-3`}>
 
-          <a href="#hero" className="flex items-center gap-3">
-            <div className="gt-cut-sm flex h-11 w-11 items-center justify-center bg-theme shadow-[0_8px_24px_rgba(252,138,23,0.35)]">
-              <span className="font-heading text-lg font-bold text-white">S</span>
-            </div>
-            <div className="leading-tight">
-              <div className="font-heading text-sm font-bold tracking-wide text-theme">Sergej Janjić</div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-theme">Personal Coaching</div>
-            </div>
-          </a>
+          {/* Desktop (lg+) — jedan red, nepromijenjeno */}
+          <div className="hidden items-center justify-between lg:flex">
+            <a href="#hero" className="flex items-center gap-3">
+              <div className="gt-cut-sm flex h-11 w-11 items-center justify-center bg-theme shadow-[0_8px_24px_rgba(252,138,23,0.35)]">
+                <span className="font-heading text-lg font-bold text-white">S</span>
+              </div>
+              <div className="leading-tight">
+                <div className="font-heading text-sm font-bold tracking-wide text-theme">Sergej Janjić</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-theme">Personal Coaching</div>
+              </div>
+            </a>
 
-          <nav className="hidden items-center gap-8 lg:flex">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-semibold uppercase tracking-[0.12em] transition-colors ${
-                  scrolled ? "text-header hover:text-theme" : "text-white hover:text-theme"
-                }`}
-              >{link.label}</a>
-            ))}
-          </nav>
+            <nav className="flex items-center gap-8">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-semibold uppercase tracking-[0.12em] transition-colors ${
+                    scrolled ? "text-header hover:text-theme" : "text-white hover:text-theme"
+                  }`}
+                >{link.label}</a>
+              ))}
+            </nav>
 
-          <div className="flex items-center gap-4">
-            <ThemeBtn href="#contact" showArrow={false} className="hidden sm:inline-flex !min-h-[40px] !px-7 !py-3 !text-sm">
+            <ThemeBtn href="#contact" showArrow={false} className="!min-h-[40px] !px-7 !py-3 !text-sm">
               JAVI SE
             </ThemeBtn>
+          </div>
 
-            <button
-              className="flex flex-col gap-1.5 rounded-xl p-2 lg:hidden"
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              aria-controls="mobile-menu"
-              aria-expanded={mobileMenuOpen}
-              aria-label={mobileMenuOpen ? "Zatvori meni" : "Otvori meni"}
-            >
-              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
-              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "opacity-0"              : ""}`} />
-              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
-            </button>
+          {/* Mobile/tablet (< lg) — logo / JAVI SE / burger u jednom redu, ime ispod */}
+          <div className="lg:hidden">
+            <div className="flex items-center justify-between gap-3">
+              <a href="#hero" className="gt-cut-sm flex h-11 w-11 flex-shrink-0 items-center justify-center bg-theme shadow-[0_8px_24px_rgba(252,138,23,0.35)]">
+                <span className="font-heading text-lg font-bold text-white">S</span>
+              </a>
+
+              <ThemeBtn href="#contact" showArrow={false} className="!min-h-[40px] !whitespace-nowrap !px-6 !py-2.5 !text-xs">
+                JAVI SE
+              </ThemeBtn>
+
+              <button
+                className="flex flex-shrink-0 flex-col gap-1.5 rounded-xl p-2"
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                aria-controls="mobile-menu"
+                aria-expanded={mobileMenuOpen}
+                aria-label={mobileMenuOpen ? "Zatvori meni" : "Otvori meni"}
+              >
+                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
+                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "opacity-0"              : ""}`} />
+                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+              </button>
+            </div>
+
+            <div className="mt-2 font-heading text-[11px] font-bold uppercase tracking-[0.28em] text-theme">
+              Sergej Janjić <span aria-hidden="true" className="opacity-50">·</span> Personal Coaching
+            </div>
           </div>
         </div>
       </header>
