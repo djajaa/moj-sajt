@@ -610,6 +610,15 @@ select:focus {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   COVERFLOW — sakrij scrollbar, native scroll + custom drag ostaju
+═══════════════════════════════════════════════════════════════════════════ */
+.gt-coverflow-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.gt-coverflow-track::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    UTILITY ANIMATIONS
 ═══════════════════════════════════════════════════════════════════════════ */
 .gt-hover-lift {

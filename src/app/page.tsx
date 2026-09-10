@@ -568,62 +568,149 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef(0);
+  const tickingRef = useRef(false);
+  const autoRafRef = useRef(0);
+  const pausedRef = useRef(false);
+  const draggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollRef = useRef(0);
+  const touchResumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reducedMotion = usePrefersReducedMotion();
 
+  const applyTilt = useCallback(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const center = wrapRect.left + wrapRect.width / 2;
+
+    cardRefs.current.forEach((card) => {
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const cardCenter = r.left + r.width / 2;
+      const delta = (cardCenter - center) / (wrapRect.width / 2);
+      const clamped = Math.max(-1.3, Math.min(1.3, delta));
+      const rotateY = clamped * -16;
+      const scale = 1 - Math.min(Math.abs(clamped), 1) * 0.08;
+      const opacity = 1 - Math.min(Math.abs(clamped), 1) * 0.3;
+
+      card.style.transform = `perspective(1200px) rotateY(${rotateY}deg) scale(${scale})`;
+      card.style.opacity = `${opacity}`;
+      card.style.zIndex = `${100 - Math.round(Math.abs(clamped) * 10)}`;
+    });
+  }, []);
+
+  const requestTilt = useCallback(() => {
+    if (tickingRef.current) return;
+    tickingRef.current = true;
+    rafRef.current = requestAnimationFrame(() => {
+      applyTilt();
+      tickingRef.current = false;
+    });
+  }, [applyTilt]);
+
+  // Beskonačna petlja (kartice su duplirane) + tilt se računa samo na scroll, ne svaki frejm
   useEffect(() => {
-    if (reducedMotion) return;
+    applyTilt();
+    const track = trackRef.current;
+    if (!track) return;
 
-    const tick = () => {
-      const wrap = wrapRef.current;
-      if (!wrap) { rafRef.current = requestAnimationFrame(tick); return; }
-      const wrapRect = wrap.getBoundingClientRect();
-      const center = wrapRect.left + wrapRect.width / 2;
-
-      cardRefs.current.forEach((card) => {
-        if (!card) return;
-        const r = card.getBoundingClientRect();
-        const cardCenter = r.left + r.width / 2;
-        const delta = (cardCenter - center) / (wrapRect.width / 2);
-        const clamped = Math.max(-1.3, Math.min(1.3, delta));
-        const rotateY = clamped * -26;
-        const scale = 1 - Math.min(Math.abs(clamped), 1) * 0.16;
-        const translateZ = -Math.min(Math.abs(clamped), 1) * 50;
-        const opacity = 1 - Math.min(Math.abs(clamped), 1) * 0.5;
-
-        card.style.transform = `perspective(1200px) rotateY(${rotateY}deg) scale(${scale}) translateZ(${translateZ}px)`;
-        card.style.opacity = `${opacity}`;
-      });
-
-      rafRef.current = requestAnimationFrame(tick);
+    const onScroll = () => {
+      const half = track.scrollWidth / 2;
+      if (track.scrollLeft >= half) track.scrollLeft -= half;
+      else if (track.scrollLeft <= 0) track.scrollLeft += half;
+      requestTilt();
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    track.scrollLeft = 2;
+    track.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", requestTilt);
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", requestTilt);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [applyTilt, requestTilt]);
+
+  // Kontinuirano auto-vrtenje — pauzira se dok korisnik drži/prevlači
+  useEffect(() => {
+    if (reducedMotion) return;
+    const SPEED = 1.3; // px po frejmu
+
+    const step = () => {
+      const track = trackRef.current;
+      if (track && !pausedRef.current && !draggingRef.current) {
+        track.scrollLeft += SPEED;
+      }
+      autoRafRef.current = requestAnimationFrame(step);
+    };
+    autoRafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(autoRafRef.current);
   }, [reducedMotion]);
 
-  const pause  = () => { if (trackRef.current) trackRef.current.style.animationPlayState = "paused";  };
-  const resume = () => { if (trackRef.current) trackRef.current.style.animationPlayState = "running"; };
+  // Prevlačenje mišem (touch već ima native swipe, ne diramo ga)
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch") return;
+    const track = trackRef.current;
+    if (!track) return;
+    draggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartScrollRef.current = track.scrollLeft;
+    track.setPointerCapture(e.pointerId);
+    track.style.cursor = "grabbing";
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollLeft = dragStartScrollRef.current - (e.clientX - dragStartXRef.current);
+  };
+  const endDrag = () => {
+    draggingRef.current = false;
+    if (trackRef.current) trackRef.current.style.cursor = "grab";
+  };
+
+  const onTouchStart = () => {
+    if (touchResumeTimer.current) clearTimeout(touchResumeTimer.current);
+    pausedRef.current = true;
+  };
+  const onTouchEnd = () => {
+    touchResumeTimer.current = setTimeout(() => { pausedRef.current = false; }, 600);
+  };
 
   const loopItems = useMemo(() => [...items, ...items], [items]);
 
   return (
-    <div ref={wrapRef} className="relative overflow-hidden" onMouseEnter={pause} onMouseLeave={resume}>
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-14 bg-gradient-to-r from-[#f4f6f9] to-transparent sm:w-28" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-14 bg-gradient-to-l from-[#f4f6f9] to-transparent sm:w-28" />
+    <div ref={wrapRef} className="relative overflow-hidden">
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-[#f4f6f9] to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-[#f4f6f9] to-transparent sm:w-24" />
 
       <div
         ref={trackRef}
-        className="flex py-10"
-        style={{ animation: reducedMotion ? undefined : "marquee-slow 38s linear infinite" }}
+        className="gt-coverflow-track flex cursor-grab select-none overflow-x-auto py-10"
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => { pausedRef.current = false; endDrag(); }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         {loopItems.map((item, i) => (
           <div
             key={item.name + i}
             ref={(el: HTMLDivElement | null) => { cardRefs.current[i] = el; }}
-            className="gt-cut-md mx-3 w-[270px] flex-shrink-0 overflow-hidden border border-gray-100 bg-white sm:w-[320px]"
+            className="gt-cut-md mx-2 w-[240px] flex-shrink-0 overflow-hidden border border-gray-100 bg-white sm:mx-3 sm:w-[300px]"
           >
             <div className="relative aspect-square overflow-hidden bg-bg2">
-              <Image src={item.src} alt={`Transformacija klijenta ${item.name} nakon treninga sa Sergejom Janjićem`} fill sizes="(max-width: 640px) 270px, 320px" className="object-contain p-3" />
+              <Image
+                src={item.src}
+                alt={`Transformacija klijenta ${item.name} nakon treninga sa Sergejom Janjićem`}
+                fill
+                draggable={false}
+                sizes="(max-width: 640px) 240px, 300px"
+                className="pointer-events-none object-contain p-3"
+              />
             </div>
             <div className="p-6">
               <div className="mb-2 flex items-center justify-between gap-3">
@@ -857,33 +944,29 @@ export default function Home() {
             </ThemeBtn>
           </div>
 
-          {/* Mobile/tablet (< lg) — logo / JAVI SE / burger u jednom redu, ime ispod */}
-          <div className="lg:hidden">
-            <div className="flex items-center justify-between gap-3">
-              <a href="#hero" className="gt-cut-sm flex h-11 w-11 flex-shrink-0 items-center justify-center bg-theme shadow-[0_8px_24px_rgba(252,138,23,0.35)]">
+          {/* Mobile/tablet (< lg) — logo+ime lijevo, burger desno, bez JAVI SE dugmeta */}
+          <div className="flex items-center justify-between lg:hidden">
+            <a href="#hero" className="flex items-center gap-3">
+              <div className="gt-cut-sm flex h-11 w-11 items-center justify-center bg-theme shadow-[0_8px_24px_rgba(252,138,23,0.35)]">
                 <span className="font-heading text-lg font-bold text-white">S</span>
-              </a>
+              </div>
+              <div className="leading-tight">
+                <div className="font-heading text-sm font-bold tracking-wide text-theme">Sergej Janjić</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-theme">Personal Coaching</div>
+              </div>
+            </a>
 
-              <ThemeBtn href="#contact" showArrow={false} className="!min-h-[40px] !whitespace-nowrap !px-6 !py-2.5 !text-xs">
-                JAVI SE
-              </ThemeBtn>
-
-              <button
-                className="flex flex-shrink-0 flex-col gap-1.5 rounded-xl p-2"
-                onClick={() => setMobileMenuOpen((v) => !v)}
-                aria-controls="mobile-menu"
-                aria-expanded={mobileMenuOpen}
-                aria-label={mobileMenuOpen ? "Zatvori meni" : "Otvori meni"}
-              >
-                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
-                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "opacity-0"              : ""}`} />
-                <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
-              </button>
-            </div>
-
-            <div className="mt-2 font-heading text-[11px] font-bold uppercase tracking-[0.28em] text-theme">
-              Sergej Janjić <span aria-hidden="true" className="opacity-50">·</span> Personal Coaching
-            </div>
+            <button
+              className="flex flex-col gap-1.5 rounded-xl p-2"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-controls="mobile-menu"
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? "Zatvori meni" : "Otvori meni"}
+            >
+              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
+              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "opacity-0"              : ""}`} />
+              <span className={`block h-0.5 w-6 bg-theme transition-all duration-300 ${mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+            </button>
           </div>
         </div>
       </header>
@@ -1119,16 +1202,8 @@ export default function Home() {
               </div>
 
               <Reveal delay={420}>
-                <div className="mt-10 flex flex-col gap-5">
+                <div className="mt-10">
                   <ThemeBtn href="#contact" className="w-full sm:w-auto">JAVI SE</ThemeBtn>
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold text-txt">
-                    <a href={SERGEJ_IG} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition hover:text-theme">
-                      <InstagramIcon className="h-4 w-4" /> Instagram
-                    </a>
-                    <a href={`https://wa.me/${PHONE_E164}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition hover:text-theme">
-                      <ChatIcon className="h-4 w-4" /> WhatsApp
-                    </a>
-                  </div>
                 </div>
               </Reveal>
             </div>
@@ -1242,8 +1317,8 @@ export default function Home() {
 
             <div>
               <Reveal>
-                <div className="gt-cut-md mb-8 grid grid-cols-3 gap-4 border border-gray-100 bg-white p-6">
-                  {([["104→84kg","Promjena"],["7","mjeseci"],["0","povreda"]] as const).map(([big, small]) => (
+                <div className="gt-cut-md mb-8 grid grid-cols-2 gap-x-4 gap-y-5 border border-gray-100 bg-white p-6 sm:grid-cols-4">
+                  {([["104kg","Početna kilaža"],["84kg","Završna kilaža"],["7","Mjeseci"],["0","Povreda"]] as const).map(([big, small]) => (
                     <div key={small}>
                       <div className="font-heading text-lg font-bold text-theme sm:text-xl">{big}</div>
                       <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-txt sm:text-[11px]">{small}</div>
