@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://sergejjanjic.com"),
 
   title: {
-    default:  "Sergej Janjić | Personal Coaching – Banja Luka",
+    default:  "Sergej Janjić | Personal Coaching u Banja Luci",
     template: "%s | Sergej Janjić",
   },
 

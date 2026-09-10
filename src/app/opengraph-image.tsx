@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Sergej Janjić — Personal Coaching";
+export const alt = "Sergej Janjić, Personal Coaching";
 
 export default function OgImage() {
   return new ImageResponse(
@@ -48,7 +48,7 @@ export default function OgImage() {
           Rezultat koji ostaje.
         </div>
         <div style={{ display: "flex", fontSize: 28, marginTop: 36, color: "rgba(255,255,255,0.6)" }}>
-          Sergej Janjic — 1:1 coaching, uzivo i online, Banja Luka
+          Sergej Janjic, 1:1 coaching, uzivo i online, Banja Luka
         </div>
       </div>
     ),

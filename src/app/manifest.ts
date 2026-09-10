@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Sergej Janjić — Personal Coaching",
+    name: "Sergej Janjić, Personal Coaching",
     short_name: "Sergej Janjić",
     description: "1:1 personal coaching, uživo i online. Banja Luka.",
     start_url: "/",

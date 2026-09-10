@@ -36,11 +36,11 @@ const FAQS = [
   },
   {
     q: "Kad mogu očekivati prve rezultate?",
-    a: "Prve promjene u snazi i osjećaju obično se vide za 3–4 nedjelje. Vidljiva promjena izgleda traje duže i zavisi od cilja, doslednosti i polazne tačke, zato ne dajem univerzalan broj.",
+    a: "Prve promjene u snazi i osjećaju obično se vide za tri do četiri nedjelje. Vidljiva promjena izgleda traje duže i zavisi od cilja, doslednosti i polazne tačke, zato ne dajem univerzalan broj.",
   },
   {
     q: "Koja je razlika između uživo i online saradnje?",
-    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video-provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
+    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
   },
   {
     q: "Koliko košta saradnja?",
@@ -1343,7 +1343,7 @@ export default function Home() {
                 <Reveal delay={240}>
                   <div>
                     <h4 className="mb-2 text-header">Rezultat</h4>
-                    <p className="leading-7 text-txt">Za sedam mjeseci: 104kg → 84kg, bez povreda i bez jo-jo efekta. Danas Marko trenira samostalno i nikad se nije vratio na staru težinu.</p>
+                    <p className="leading-7 text-txt">Za sedam mjeseci: 104kg → 84kg, bez povreda i bez jojo efekta. Danas Marko trenira samostalno i nikad se nije vratio na staru težinu.</p>
                   </div>
                 </Reveal>
               </div>
@@ -1351,7 +1351,7 @@ export default function Home() {
               <Reveal delay={320}>
                 <blockquote className="gt-cut-md mt-8 border-l-4 border-theme bg-theme/5 p-6">
                   <p className="font-serif text-lg italic leading-8 text-header">&ldquo;Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim.&rdquo;</p>
-                  <footer className="mt-3 text-sm font-semibold text-txt">— Marko</footer>
+                  <footer className="mt-3 text-sm font-semibold text-txt">Marko</footer>
                 </blockquote>
               </Reveal>
             </div>
@@ -1487,7 +1487,7 @@ export default function Home() {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 if (form.website) return; // honeypot popunjen → tiho ignoriši, vjerovatno bot
-                const subject = encodeURIComponent(`Upit – ${form.goal} – ${form.name || "Anonimno"}`);
+                const subject = encodeURIComponent(`Upit: ${form.goal} (${form.name || "Anonimno"})`);
                 const body = encodeURIComponent(`Ime: ${form.name || "-"}\nEmail: ${form.email || "-"}\nVrsta saradnje: ${form.mode}\nCilj: ${form.goal}\n\nPoruka:\n${form.message || "-"}`);
                 window.location.href = `mailto:janjicsergejcoaching@gmail.com?subject=${subject}&body=${body}`;
                 router.push("/hvala");
