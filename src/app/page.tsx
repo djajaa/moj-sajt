@@ -1055,8 +1055,8 @@ export default function Home() {
       <section id="hero" onMouseMove={onHeroMouseMove} className="relative flex min-h-[100svh] items-center overflow-hidden">
         <div
           ref={heroBgRef}
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')", transform: "scale(1.08)" }}
+          className="absolute inset-0 z-0 bg-cover bg-no-repeat"
+          style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')", backgroundPosition: "center 15%", transform: "scale(1.08)" }}
         />
         <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#08090b] via-[#08090b]/88 to-[#08090b]/45" />
         <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#08090b]/90 via-[#08090b]/20 to-transparent" />
@@ -1382,7 +1382,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════ CTA BANNER ═══════════════════════════ */}
-      <section className="relative overflow-hidden bg-cover bg-fixed bg-center py-32" style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')" }}>
+      <section className="relative overflow-hidden bg-cover bg-fixed py-32" style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')", backgroundPosition: "center 15%" }}>
         <div className="absolute inset-0 bg-[#08090b]/92" />
 
         <div className={`${cx} relative z-10`}>
@@ -1590,7 +1590,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ FOOTER ══════════════════════════════ */}
-      <footer className="relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')" }}>
+      <footer className="relative overflow-hidden bg-cover" style={{ backgroundImage: "url('/images/hero/sergej-hero.jpg')", backgroundPosition: "center 15%" }}>
         <div className="absolute inset-0 bg-[#08090b]/97" />
 
         <div className="relative z-10">
