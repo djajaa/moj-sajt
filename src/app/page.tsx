@@ -20,7 +20,7 @@ const NAV_LINKS = [
   { label: "O meni",    href: "#about"    },
   { label: "Saradnja",  href: "#services" },
   { label: "Rezultati", href: "#results"  },
-  { label: "Pitanja",   href: "#faq"      },
+  { label: "FAQ",       href: "#faq"      },
   { label: "Kontakt",   href: "#contact"  },
 ];
 
@@ -338,23 +338,51 @@ function Eyebrow({
 }
 
 // ─── FaqItem ──────────────────────────────────────────────────────────────────
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqItem({ q, a, index }: { q: string; a: string; index: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="gt-cut-md border border-gray-100 bg-white">
+    <div
+      className={`gt-faq-item gt-cut-md group relative overflow-hidden border bg-white ${
+        open
+          ? "border-theme/40 shadow-[0_18px_44px_rgba(184,87,8,0.16)]"
+          : "border-gray-100 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:border-theme/25 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
+      }`}
+    >
+      {/* akcent traka koja izraste kad se otvori */}
+      <span
+        aria-hidden="true"
+        className={`absolute left-0 top-0 w-[3px] bg-theme transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "h-full opacity-100" : "h-0 opacity-0"}`}
+      />
+
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+        className="flex w-full items-center gap-4 px-6 py-5 text-left"
         aria-expanded={open}
       >
-        <span className="font-heading text-base font-bold text-header">{q}</span>
-        <span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-theme/10 text-theme transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
+        <span className={`font-serif text-lg italic transition-colors duration-300 ${open ? "text-theme" : "text-txt/40 group-hover:text-theme/70"}`}>
+          {index}
+        </span>
+        <span className={`flex-1 font-heading text-base font-bold text-header transition-transform duration-300 ${open ? "translate-x-1" : "group-hover:translate-x-1"}`}>
+          {q}
+        </span>
+        <span
+          className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            open ? "rotate-[135deg] scale-110 bg-theme text-white" : "bg-theme/10 text-theme group-hover:scale-110 group-hover:bg-theme/20"
+          }`}
+        >
           <PlusIcon />
         </span>
       </button>
-      <div className={`grid transition-all duration-300 ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+
+      <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div className="overflow-hidden">
-          <p className="px-6 pb-6 text-sm leading-7 text-txt">{a}</p>
+          <p
+            className={`px-6 pb-6 pl-[3.25rem] text-sm leading-7 text-txt transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              open ? "translate-y-0" : "-translate-y-3"
+            }`}
+          >
+            {a}
+          </p>
         </div>
       </div>
     </div>
@@ -1203,7 +1231,7 @@ export default function Home() {
 
               <Reveal delay={420}>
                 <div className="mt-10">
-                  <ThemeBtn href="#contact" className="w-full sm:w-auto">JAVI SE</ThemeBtn>
+                  <ThemeBtn href="#contact" className="w-full !justify-center">JAVI SE</ThemeBtn>
                 </div>
               </Reveal>
             </div>
@@ -1217,12 +1245,11 @@ export default function Home() {
         <div className={`${cx} relative z-10`}>
 
           <Reveal>
-            <div className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="mb-14">
               <div className="gt-section-title">
                 <Eyebrow index="02" label="Vrste saradnje" />
                 <h2>Saradnja <span className="font-serif text-[0.85em] font-normal italic text-theme">(1:1)</span></h2>
               </div>
-              <ThemeBtn href="#contact" className="w-full sm:w-auto">JAVI SE</ThemeBtn>
             </div>
 
             <p className="mb-14 max-w-3xl leading-8 text-txt">
@@ -1361,18 +1388,24 @@ export default function Home() {
 
       {/* ══════════════════════════════ FAQ ════════════════════════════════ */}
       <section id="faq" className="section-padding relative">
+        <div className="gt-orb gt-orb--red h-[420px] w-[420px] -left-40 top-0" aria-hidden="true" />
+        <div className="gt-orb gt-orb--ember h-[360px] w-[360px] -right-32 bottom-10" aria-hidden="true" />
+        <div className="gt-trans-text" aria-hidden="true">FAQ</div>
+
         <div className={`${cx} relative z-10`}>
           <Reveal>
             <div className="mb-14 text-center">
-              <Eyebrow index="05" label="Pitanja" className="mx-auto" />
-              <h2 className="mx-auto">Prije nego <span className="font-serif text-[0.85em] font-normal italic text-theme">pitaš</span></h2>
+              <Eyebrow index="05" label="FAQ" className="mx-auto" />
+              <h2 className="mx-auto">
+                Često postavljana <span className="font-serif text-[0.85em] font-normal italic text-theme">pitanja</span>
+              </h2>
             </div>
           </Reveal>
 
           <div className="mx-auto max-w-2xl space-y-4">
             {FAQS.map((item, i) => (
-              <Reveal key={item.q} delay={i * 80}>
-                <FaqItem q={item.q} a={item.a} />
+              <Reveal key={item.q} delay={i * 110} variant="up">
+                <FaqItem q={item.q} a={item.a} index={String(i + 1).padStart(2, "0")} />
               </Reveal>
             ))}
           </div>

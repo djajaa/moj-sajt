@@ -619,6 +619,40 @@ select:focus {
 .gt-coverflow-track::-webkit-scrollbar { display: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   FAQ ACCORDION
+═══════════════════════════════════════════════════════════════════════════ */
+.gt-faq-item {
+  transition:
+    border-color 0.4s var(--ease-out-expo),
+    box-shadow 0.4s var(--ease-out-expo),
+    transform 0.4s var(--ease-out-expo);
+}
+
+.gt-faq-item:hover { transform: translateY(-3px); }
+
+/* sjaj koji prelijeće preko kartice na hover */
+.gt-faq-item::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 35%;
+  height: 220%;
+  background: linear-gradient(120deg, transparent, rgba(184, 87, 8, 0.10), transparent);
+  transform: rotate(18deg) translateX(-140%);
+  transition: transform 0.9s var(--ease-out-expo);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gt-faq-item:hover::after { transform: rotate(18deg) translateX(320%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-faq-item:hover { transform: none; }
+  .gt-faq-item::after { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    UTILITY ANIMATIONS
 ═══════════════════════════════════════════════════════════════════════════ */
 .gt-hover-lift {
