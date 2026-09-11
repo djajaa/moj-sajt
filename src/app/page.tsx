@@ -1136,11 +1136,11 @@ export default function Home() {
             </Reveal>
 
             <Reveal delay={500} variant="scale">
-              <div className="gt-cut-lg mt-14 grid max-w-md grid-cols-3 gap-4 border border-white/[0.10] bg-white/[0.05] p-6 backdrop-blur-md sm:p-7">
+              <div className="gt-cut-lg mt-14 flex max-w-lg items-start justify-between gap-3 border border-white/[0.10] bg-white/[0.05] p-5 backdrop-blur-md sm:gap-6 sm:p-7">
                 {([["300+","Saradnji"],["1:1","Pristup"],["100%","Posvećenost"]] as const).map(([big,small]) => (
-                  <div key={small}>
-                    <div className="font-heading text-3xl font-bold text-theme sm:text-[2.2rem]"><Counter value={big} /></div>
-                    <div className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">{small}</div>
+                  <div key={small} className="min-w-0">
+                    <div className="font-heading text-2xl font-bold leading-none text-theme sm:text-[2.2rem]"><Counter value={big} /></div>
+                    <div className="mt-2 whitespace-nowrap text-[9px] font-semibold uppercase leading-tight tracking-[0.08em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">{small}</div>
                   </div>
                 ))}
               </div>
@@ -1329,7 +1329,7 @@ export default function Home() {
             <h2 className="max-w-2xl">Kako je Marko skinuo <span className="font-serif text-[0.85em] font-normal italic text-theme">20 kilograma</span></h2>
           </Reveal>
 
-          <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+          <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
             <Reveal variant="scale">
               <div className="gt-cut-lg relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
                 <Image
