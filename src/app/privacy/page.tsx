@@ -42,29 +42,38 @@ export default function PrivacyPage() {
           <Section n="01" title="Koje podatke prikupljam">
             <p>
               Ovaj sajt nema bazu podataka, naloge ni prijavu. Jedini podaci koje ostavljaš su oni koje sâm
-              upišeš u kontakt formu na početnoj strani: ime, telefon (opciono), vrsta saradnje, cilj i poruka.
-              Ništa se ne prikuplja automatski u pozadini: nema praćenja pokreta miša, nema fingerprinting-a,
-              nema prodaje podataka trećim licima, jer ih uopšte i ne čuvam.
+              upišeš u kontakt formu na početnoj strani: ime, telefon, vrsta saradnje, cilj, termin koji ti
+              odgovara i poruka. Ništa se ne prikuplja automatski u pozadini: nema praćenja pokreta miša,
+              nema fingerprintinga, nema prodaje podataka trećim licima, jer ih uopšte i ne čuvam.
             </p>
           </Section>
 
-          <Section n="02" title="Šta se dešava kad pošalješ poruku">
+          <Section n="02" title="Šta se dešava kad pošalješ upit">
             <p>
-              Kad klikneš &bdquo;Pošalji poruku&ldquo;, forma ne šalje ništa na server. Ona samo otvori tvoj
-              vlastiti mail program (Gmail, Outlook, Mail...) sa već popunjenim tekstom. Poruka stiže do mene
-              tek kad je ti stvarno pošalješ iz svog naloga. Isto važi za dugme WhatsApp: ono otvara direktan
-              razgovor sa mnom preko WhatsApp aplikacije, ne prolazi kroz ovaj sajt.
+              Kad klikneš &bdquo;Pošalji upit&ldquo;, forma ne šalje ništa na server ovog sajta. Ona otvara
+              WhatsApp razgovor sa mnom, sa već sastavljenim tekstom od onoga što si upisao. Poruka stiže do
+              mene tek kad je ti stvarno pošalješ iz svoje WhatsApp aplikacije, i od tog trenutka se na nju
+              primjenjuje politika privatnosti WhatsApp-a (Meta).
             </p>
             <p>
-              Drugim riječima: ja ne vidim ništa dok mi sâm(a) ne pošalješ poruku ili se ne javiš na WhatsApp.
+              Ako ne koristiš WhatsApp, ispod forme stoje link za mail i broj telefona. Mail link otvara tvoj
+              vlastiti mail program sa pripremljenom porukom, isto tako ne prolazi kroz ovaj sajt.
+            </p>
+            <p>
+              Drugim riječima: ja ne vidim ništa dok mi sâm(a) ne pošalješ poruku ili se ne javiš.
             </p>
           </Section>
 
-          <Section n="03" title="Kolačići">
+          <Section n="03" title="Kolačići i statistika">
             <p>
               Sajt ne koristi kolačiće za praćenje niti za oglašavanje. Za osnovnu, anonimnu statistiku posjeta
               (koliko ljudi otvori sajt, sa kog uređaja) koristim Vercel Analytics, servis koji ne koristi
               kolačiće i ne prikuplja lične podatke, pa banner za saglasnost nije potreban.
+            </p>
+            <p>
+              Uz to bilježim anonimne događaje na stranici: da je neko kliknuo dugme za kontakt, otvorio
+              WhatsApp ili poslao upit. Bilježi se samo da se događaj desio, nikad ono što si upisao u formu
+              i nikad podatak po kojem bi te neko mogao prepoznati.
             </p>
           </Section>
 

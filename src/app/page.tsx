@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { track as vercelTrack } from "@vercel/analytics";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -10,19 +11,49 @@ const SERGEJ_IG     = "https://www.instagram.com/janjiccsergej/";
 const GYM_IG        = "https://www.instagram.com/gym_phoenix_/";
 const PHONE_DISPLAY = "+387 66 457 157";
 const PHONE_E164    = "38766457157";
+const EMAIL         = "janjicsergejcoaching@gmail.com";
 const ADDRESS       = "Trg srpskih junaka 1, Banja Luka 78000";
 const MAPS_LINK     = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`;
+
+// Jedan primarni poziv na akciju kroz cijeli sajt. Traži mali korak (razgovor),
+// ne veliku odluku (saradnju), pa hladan posjetilac lakše klikne.
+const CTA_PRIMARY  = "ZAKAŽI BESPLATAN RAZGOVOR";
+const CTA_WHATSAPP = "PIŠI NA WHATSAPP";
+const CTA_NOTE     = "Besplatno · 10 do 15 minuta · bez obaveze";
 
 const cx = "mx-auto w-full max-w-[1600px] px-8 sm:px-10 lg:px-14 xl:px-20";
 
 const NAV_LINKS = [
   { label: "Početna",   href: "#hero"     },
-  { label: "O meni",    href: "#about"    },
-  { label: "Saradnja",  href: "#services" },
   { label: "Rezultati", href: "#results"  },
+  { label: "Saradnja",  href: "#services" },
+  { label: "O meni",    href: "#about"    },
   { label: "FAQ",       href: "#faq"      },
   { label: "Kontakt",   href: "#contact"  },
 ];
+
+// ─── Analytics ───────────────────────────────────────────────────────────────
+// Posjeta nije isto što i klijent. Ovo mjeri put: klik na CTA → otvoren
+// WhatsApp → započeta forma → poslan upit, da se vidi gdje ljudi otpadaju.
+type TrackEvent =
+  | "hero_cta_click"
+  | "cta_click"
+  | "whatsapp_click"
+  | "phone_click"
+  | "form_start"
+  | "lead_submitted"
+  | "email_fallback";
+
+function track(event: TrackEvent, data?: Record<string, string>) {
+  if (typeof window === "undefined") return;
+  try {
+    vercelTrack(event, data);
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    gtag?.("event", event, data ?? {});
+  } catch {
+    // Mjerenje nikad ne smije da obori stranicu.
+  }
+}
 
 const MARQUEE_WORDS = [
   "tehnika", "progresija", "struktura", "oporavak",
@@ -31,8 +62,16 @@ const MARQUEE_WORDS = [
 
 const FAQS = [
   {
-    q: "Da li mi treba prethodno iskustvo sa treningom?",
-    a: "Ne. Radim i sa ljudima koji nikad nisu bili u teretani i sa onima koji treniraju godinama. Plan se pravi prema tvom nivou, ne obrnuto.",
+    q: "Da li je ovo za mene ako nikad nisam trenirao?",
+    a: "Jeste. Veliki dio ljudi sa kojima radim kreće od nule ili se vraća poslije duže pauze. Prvi treninzi idu na tehniku i na to da uopšte uđeš u ritam, ne na to koliko možeš da podigneš.",
+  },
+  {
+    q: "Šta tačno dobijam kad krenemo?",
+    a: "Procjenu na početku, plan treninga pisan za tebe, praćenje brojki koje su bitne za tvoj cilj, korekcije kad nešto ne radi i direktnu liniju do mene između treninga. Nema gotovih programa koje dobija svako.",
+  },
+  {
+    q: "Koliko košta saradnja?",
+    a: "Cijena zavisi od tri stvari: koliko treninga sedmično radiš, da li je uživo ili online i koliko dugo saradnja traje. Tačan iznos dobiješ na prvom razgovoru, prije nego što se na bilo šta obavežeš. Taj razgovor je besplatan i ostaje besplatan i ako odlučiš da ne krećeš.",
   },
   {
     q: "Kad mogu očekivati prve rezultate?",
@@ -40,11 +79,15 @@ const FAQS = [
   },
   {
     q: "Koja je razlika između uživo i online saradnje?",
-    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
+    a: "Uživo treniramo zajedno u teretani u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
   },
   {
-    q: "Koliko košta saradnja?",
-    a: "Zavisi od cilja, učestalosti i vrste saradnje, pa cijenu dogovaramo nakon kratkog razgovora. Ne postoji fiksni paket za sve.",
+    q: "Šta ako ne mogu tri puta sedmično?",
+    a: "Onda pravimo plan za onoliko treninga koliko realno možeš. Plan koji ne možeš da ispoštuješ ne vrijedi ništa, bez obzira koliko dobro izgleda na papiru.",
+  },
+  {
+    q: "Koliko dugo traje saradnja?",
+    a: "Nema ugovora na godinu dana. Većina ostane dok ne dođe do cilja i dok ne nauči da sama drži plan. Marku je za dvadeset kilograma manje trebalo sedam mjeseci i danas trenira samostalno.",
   },
   {
     q: "Šta ako imam povredu ili zdravstveno ograničenje?",
@@ -79,13 +122,23 @@ const LOCAL_BUSINESS_SCHEMA = {
   sameAs: ["https://www.instagram.com/janjiccsergej/", "https://www.instagram.com/gym_phoenix_/"],
 };
 
+// `stat` se postavlja samo tamo gdje postoji konkretan, mjeren podatak.
+// Nema izmišljenih ocjena: ako ocjena nije javna i provjerljiva, nema je ni na sajtu.
 const TESTIMONIALS = [
-  { src: "/images/transformations/client-1.png", name: "Aleksa",  quote: "Trenirao sam profesionalno godinama i mislio da znam sve o treningu. Sergej mi je za mjesec dana pokazao koliko sam pogrešno radio bazu." },
-  { src: "/images/transformations/client-2.png", name: "Luka",    quote: "Znao sam šta treba da radim, samo nisam imao ko da me drži za riječ. Sad nemam izgovor: primijeti odmah kad počnem da popuštam." },
-  { src: "/images/transformations/client-3.jpg", name: "Marko",   quote: "104kg → 84kg za sedam mjeseci, bez gladovanja i bez ijedne povrede. Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim." },
-  { src: "/images/transformations/client-4.png", name: "Jovan",   quote: "Gledam slike od prije godinu dana i ne prepoznajem se. Nisam očekivao da ću ikad ovako izgledati, a kamoli da ću uživati u procesu." },
-  { src: "/images/transformations/client-5.png", name: "Danilo",  quote: "Na prvom treningu mi je Sergej objasnio tačno šta radimo i zašto. Poslije toliko pokušaja sa programima sa interneta, to mi je bilo skoro čudno." },
-  { src: "/images/transformations/client-6.jpg", name: "Sergej",  quote: "57kg → 62kg čiste mase, bez ijednog kilograma masti navrh. Kad ljudima kažem kako, ne vjeruju da nisam koristio ništa osim treninga i hrane." },
+  { src: "/images/transformations/client-1.png", name: "Aleksa",  stat: "",                       quote: "Trenirao sam profesionalno godinama i mislio da znam sve o treningu. Sergej mi je za mjesec dana pokazao koliko sam pogrešno radio bazu." },
+  { src: "/images/transformations/client-2.png", name: "Luka",    stat: "",                       quote: "Znao sam šta treba da radim, samo nisam imao ko da me drži za riječ. Sad nemam izgovor: primijeti odmah kad počnem da popuštam." },
+  { src: "/images/transformations/client-3.jpg", name: "Marko",   stat: "104kg → 84kg · 7 mj.",   quote: "Bez gladovanja i bez ijedne povrede. Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim." },
+  { src: "/images/transformations/client-4.png", name: "Jovan",   stat: "",                       quote: "Gledam slike od prije godinu dana i ne prepoznajem se. Nisam očekivao da ću ikad ovako izgledati, a kamoli da ću uživati u procesu." },
+  { src: "/images/transformations/client-5.png", name: "Danilo",  stat: "",                       quote: "Na prvom treningu mi je Sergej objasnio tačno šta radimo i zašto. Poslije toliko pokušaja sa programima sa interneta, to mi je bilo skoro čudno." },
+  { src: "/images/transformations/client-6.jpg", name: "Sergej",  stat: "57kg → 62kg",            quote: "Pet kilograma gore, uz vidljiv napredak u mišićnoj masi i obim struka koji se skoro nije pomjerio. Bez ičega osim treninga i hrane." },
+];
+
+// Kratka traka dokaza odmah ispod heroa: konkretno, provjerljivo, bez parola.
+const PROOF_STRIP = [
+  "300+ saradnji",
+  "1:1, nikad grupno",
+  "Uživo u Banja Luci i online",
+  "Odgovor u roku od 24h",
 ];
 
 // ─── Icons (custom, bez emoji-ja) ──────────────────────────────────────────────
@@ -295,7 +348,15 @@ function Counter({ value, className = "" }: { value: string; className?: string 
     return () => cancelAnimationFrame(raf);
   }, [inView, value]);
 
-  return <span ref={ref} className={className}>{display}</span>;
+  // Animirani broj kreće od nule, pa bi crawler (i čitač ekrana) inače vidio
+  // "000+" umjesto "300+". Prava vrijednost zato uvijek stoji u DOM-u, samo je
+  // vizuelno sakrivena; animacija je čisto dekoracija i skrivena je od a11y.
+  return (
+    <span ref={ref} className={className}>
+      <span className="sr-only">{value}</span>
+      <span aria-hidden="true">{display}</span>
+    </span>
+  );
 }
 
 // ─── TiltCard ─────────────────────────────────────────────────────────────────
@@ -709,8 +770,8 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
 
   return (
     <div ref={wrapRef} className="relative overflow-hidden">
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-[#f4f6f9] to-transparent sm:w-24" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-[#f4f6f9] to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-[#f7f8fb] to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-[#f7f8fb] to-transparent sm:w-24" />
 
       <div
         ref={trackRef}
@@ -741,9 +802,11 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
               />
             </div>
             <div className="p-6">
-              <div className="mb-2 flex items-center justify-between gap-3">
+              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                 <h3 className="text-base font-bold text-header">{item.name}</h3>
-                <span className="font-serif text-base italic text-theme">5.0</span>
+                {item.stat && (
+                  <span className="font-heading text-[11px] font-bold uppercase tracking-[0.08em] text-theme">{item.stat}</span>
+                )}
               </div>
               <p className="text-sm leading-7 text-txt">&ldquo;{item.quote}&rdquo;</p>
             </div>
@@ -758,7 +821,7 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
 function MobileActionBar({ onWhatsApp }: { onWhatsApp: () => void }) {
   return (
     <div className="gt-mobile-bar flex items-stretch lg:hidden">
-      <a href={`tel:+${PHONE_E164}`} className="gt-mobile-bar-btn">
+      <a href={`tel:+${PHONE_E164}`} onClick={() => track("phone_click", { from: "mobile_bar" })} className="gt-mobile-bar-btn">
         <PhoneIcon className="h-[18px] w-[18px]" />
         <span>Pozovi</span>
       </a>
@@ -796,12 +859,22 @@ export default function Home() {
 
   const [form, setForm] = useState({
     name:     "",
-    email:    "",
+    phone:    "",
     mode:     "Uživo (1:1)"  as "Uživo (1:1)"  | "Online (1:1)",
     goal:     "Mršavljenje"  as "Mršavljenje" | "Mišićna masa" | "Kondicija" | "Rekompozicija" | "Povratak u formu",
+    when:     "Fleksibilno"  as "Ujutro" | "Prije podne" | "Popodne" | "Uveče" | "Fleksibilno",
     message:  "",
     website:  "", // honeypot — pravi posjetioci ovo ne vide ni ne popunjavaju
   });
+  const formStarted = useRef(false);
+
+  // "Počeo da popunjava" se broji jednom po posjeti — tako se vidi koliko ljudi
+  // krene i odustane, što je razlika između broja posjeta i broja upita.
+  const onFormTouch = useCallback(() => {
+    if (formStarted.current) return;
+    formStarted.current = true;
+    track("form_start");
+  }, []);
 
   useEffect(() => {
     const update = () => setWideEnough(window.innerWidth >= 1024);
@@ -896,20 +969,39 @@ export default function Home() {
 
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
 
-  const openWhatsApp = useCallback(() => {
-    const lines = [
-      "Zdravo Sergej,", "",
-      `Ime: ${form.name || "-"}`,
-      `Email: ${form.email || "-"}`,
-      `Vrsta saradnje: ${form.mode}`,
-      `Cilj: ${form.goal}`, "",
-      "Poruka:", form.message || "-", "", "Hvala!",
-    ];
-    window.open(
-      `https://wa.me/${PHONE_E164}?text=${encodeURIComponent(lines.join("\n"))}`,
-      "_blank", "noopener,noreferrer"
-    );
-  }, [form]);
+  // Sajt nema backend, pa je WhatsApp jedini kanal koji stvarno isporuči poruku
+  // bez obzira da li posjetilac ima podešen mail program na uređaju.
+  const buildEnquiry = useCallback(
+    (detailed: boolean) => {
+      const lines = ["Zdravo Sergej,", "", "Javljam se preko sajta za besplatan uvodni razgovor.", ""];
+      if (form.name)    lines.push(`Ime: ${form.name}`);
+      if (form.phone)   lines.push(`Telefon: ${form.phone}`);
+      if (detailed) {
+        lines.push(`Vrsta saradnje: ${form.mode}`);
+        lines.push(`Cilj: ${form.goal}`);
+        lines.push(`Termin koji mi odgovara: ${form.when}`);
+        if (form.message) lines.push("", "Poruka:", form.message);
+      }
+      return lines.join("\n");
+    },
+    [form]
+  );
+
+  const openWhatsApp = useCallback(
+    (from: string, detailed = false) => {
+      track("whatsapp_click", { from });
+      const url = `https://wa.me/${PHONE_E164}?text=${encodeURIComponent(buildEnquiry(detailed))}`;
+      const win = window.open(url, "_blank", "noopener,noreferrer");
+      // Ako je iskačući prozor blokiran, poruka se ipak mora otvoriti.
+      if (!win) window.location.href = url;
+      return !!win;
+    },
+    [buildEnquiry]
+  );
+
+  const waFromBar    = useCallback(() => { openWhatsApp("mobile_bar"); }, [openWhatsApp]);
+  const waFromHero   = useCallback(() => { openWhatsApp("hero");       }, [openWhatsApp]);
+  const waFromBanner = useCallback(() => { openWhatsApp("cta_banner"); }, [openWhatsApp]);
 
   const marqueeItems = useMemo(() => [...MARQUEE_WORDS, ...MARQUEE_WORDS], []);
 
@@ -955,20 +1047,25 @@ export default function Home() {
               </div>
             </a>
 
-            <nav className="flex items-center gap-8">
+            <nav className="flex items-center gap-5 xl:gap-8">
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-semibold uppercase tracking-[0.12em] transition-colors ${
+                  className={`whitespace-nowrap text-[13px] font-semibold uppercase tracking-[0.1em] transition-colors xl:text-sm xl:tracking-[0.12em] ${
                     scrolled ? "text-header hover:text-theme" : "text-white hover:text-theme"
                   }`}
                 >{link.label}</a>
               ))}
             </nav>
 
-            <ThemeBtn href="#contact" showArrow={false} className="!min-h-[40px] !px-7 !py-3 !text-sm">
-              JAVI SE
+            <ThemeBtn
+              href="#contact"
+              showArrow={false}
+              onClick={() => track("cta_click", { from: "header" })}
+              className="!min-h-[40px] !whitespace-nowrap !px-6 !py-3 !text-[13px] xl:!px-7 xl:!text-sm"
+            >
+              ZAKAŽI RAZGOVOR
             </ThemeBtn>
           </div>
 
@@ -1049,9 +1146,14 @@ export default function Home() {
             </nav>
 
             <div className="mt-6 space-y-3">
-              <ThemeBtn href="#contact" className="w-full !justify-center" onClick={closeMobileMenu}>
-                JAVI SE
+              <ThemeBtn
+                href="#contact"
+                className="w-full !justify-center !text-[13px]"
+                onClick={() => { track("cta_click", { from: "mobile_menu" }); closeMobileMenu(); }}
+              >
+                {CTA_PRIMARY}
               </ThemeBtn>
+              <p className="text-center text-[11px] font-medium text-white/45">{CTA_NOTE}</p>
               <div className="grid grid-cols-2 gap-3">
                 <a href={SERGEJ_IG} target="_blank" rel="noopener noreferrer"
                   className="gt-cut-sm flex items-center justify-center gap-2 border border-white/[0.10] bg-white/[0.04] py-4 font-semibold text-white transition hover:border-theme/50 hover:text-theme">
@@ -1108,8 +1210,10 @@ export default function Home() {
 
             <Reveal delay={80}>
               <div className="mb-6 flex items-center gap-3">
-                <div className="h-px w-8 bg-theme" />
-                <span className="text-sm font-semibold uppercase tracking-[0.22em] text-theme">Personal Coaching</span>
+                <div className="h-px w-8 flex-shrink-0 bg-theme" />
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-theme sm:text-sm sm:tracking-[0.22em]">
+                  Personalni trening 1:1 · Banja Luka i online
+                </span>
               </div>
             </Reveal>
 
@@ -1124,20 +1228,23 @@ export default function Home() {
 
             <Reveal delay={340}>
               <p className="mt-8 max-w-xl text-base leading-8 text-white/70 sm:text-lg">
-                Ne dobijaš gotov program sa interneta. Dobijaš plan pisan za tebe, treniraš sa jasnim ciljem i znaš tačno zašto radiš ono što radiš, iz nedjelje u nedjelju, bez lutanja.
+                Za ljude koji hoće da smršaju, izgrade mišiće ili se vrate u formu, a dosta im je
+                programa sa interneta i nagađanja u teretani. Dobijaš plan pisan za tvoje tijelo,
+                raspored i cilj, plus nekoga ko prati da li zaista radi.
               </p>
             </Reveal>
 
             <Reveal delay={420}>
               <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                <ThemeBtn href="#contact" className="w-full sm:w-auto">ZAPOČNI SARADNJU</ThemeBtn>
-                <ThemeBtn href="#services" variant="border" showArrow={false} className="w-full sm:w-auto">VRSTE SARADNJE</ThemeBtn>
+                <ThemeBtn href="#contact" onClick={() => track("hero_cta_click")} className="w-full sm:w-auto">{CTA_PRIMARY}</ThemeBtn>
+                <ThemeBtn onClick={waFromHero} variant="border" showArrow={false} className="w-full sm:w-auto">{CTA_WHATSAPP}</ThemeBtn>
               </div>
+              <p className="mt-4 text-[13px] font-medium text-white/50">{CTA_NOTE}</p>
             </Reveal>
 
             <Reveal delay={500} variant="scale">
-              <div className="gt-cut-lg mt-14 flex max-w-lg items-start justify-between gap-3 border border-white/[0.10] bg-white/[0.05] p-5 backdrop-blur-md sm:gap-6 sm:p-7">
-                {([["300+","Saradnji"],["1:1","Pristup"],["100%","Posvećenost"]] as const).map(([big,small]) => (
+              <div className="gt-cut-lg mt-12 flex max-w-lg items-start justify-between gap-3 border border-white/[0.10] bg-white/[0.05] p-5 backdrop-blur-md sm:gap-6 sm:p-7">
+                {([["300+","Saradnji"],["20 kg","Najviše skinuto"],["24h","Odgovor"]] as const).map(([big,small]) => (
                   <div key={small} className="min-w-0">
                     <div className="font-heading text-2xl font-bold leading-none text-theme sm:text-[2.2rem]"><Counter value={big} /></div>
                     <div className="mt-2 whitespace-nowrap text-[9px] font-semibold uppercase leading-tight tracking-[0.08em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">{small}</div>
@@ -1153,6 +1260,22 @@ export default function Home() {
           <div className="gt-scrollcue h-9 w-px bg-white/20" />
         </div>
       </section>
+
+      {/* ═════════════════════════ PROOF STRIP ══════════════════════════ */}
+      <div className="border-b border-gray-100 bg-white">
+        <div className={`${cx} py-5`}>
+          <ul className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 sm:gap-x-10">
+            {PROOF_STRIP.map((item) => (
+              <li key={item} className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.09em] text-header sm:text-[13px] sm:tracking-[0.12em]">
+                <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-theme/12 text-theme">
+                  <CheckIcon className="h-2.5 w-2.5" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
       {/* ═══════════════════════════ MARQUEE ════════════════════════════ */}
       <div
@@ -1171,146 +1294,19 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ══════════════════════════════ ABOUT ════════════════════════════ */}
-      <section id="about" className="section-padding relative">
-        <div className="gt-orb gt-orb--red h-[420px] w-[420px] -left-32 top-10" aria-hidden="true" />
-        <div className="gt-trans-text" aria-hidden="true">COACHING</div>
-
-        <div className={`${cx} relative z-10`}>
-          <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_1fr]">
-
-            <Reveal variant="scale" className="relative">
-              <div className="gt-cut-lg absolute -left-4 -top-4 -z-10 hidden h-full w-full -rotate-3 border border-theme/25 sm:block" aria-hidden="true" />
-              <div className="grid grid-cols-2 gap-5">
-                <div className="gt-cut-lg relative aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                  <Image src="/images/form/sergej-form-1.png" alt="Sergej Janjić, personalni trener u Banja Luci, tokom treninga" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
-                </div>
-                <div className="gt-cut-lg-r relative mt-10 aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                  <Image src="/images/form/sergej-form-2.png" alt="Sergej Janjić demonstrira pravilnu tehniku izvođenja vježbe" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
-                </div>
-              </div>
-              <div className="gt-cut-md relative z-10 -mt-10 ml-5 inline-flex items-center gap-3 bg-theme px-6 py-4 shadow-[0_20px_40px_rgba(252,138,23,0.30)]">
-                <span className="font-heading text-3xl font-bold text-white"><Counter value="300+" /></span>
-                <span className="text-sm font-bold uppercase leading-tight text-white/90">Uspješnih<br />saradnji</span>
-              </div>
-            </Reveal>
-
-            <div>
-              <Reveal delay={100}>
-                <div className="gt-section-title">
-                  <Eyebrow index="01" label="O meni" />
-                  <h2>Sergej <span className="font-serif text-[0.9em] font-normal italic text-theme">Janjić</span></h2>
-                </div>
-
-                <p className="mt-7 max-w-xl leading-8 text-txt">
-                  Vidio sam dovoljno ljudi da odustanu poslije dvije nedjelje ekstremne dijete da više ne vjerujem u prečice. Radi jasan plan, iskrena komunikacija i tempo koji možeš da izdržiš, ne tri mjeseca nego trajno.
-                </p>
-                <p className="mt-4 max-w-xl leading-8 text-txt">
-                  Na treningu sam miran i precizan. Ne vičem, ne motivišem parolama. Pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
-                </p>
-              </Reveal>
-
-              <div className="mt-10 space-y-4">
-                {[
-                  { Icon: ShieldIcon, title: "Tehnika & sigurnost", desc: "Loša tehnika te prije ili kasnije izbaci iz stroja. Ispravljam je prije nego što postane problem." },
-                  { Icon: ChartIcon,  title: "Struktura & progres",  desc: "Svaki trening ima razlog. Napredak mjerim brojkama, ne osjećajem."  },
-                ].map((item, i) => (
-                  <Reveal key={item.title} delay={180 + i * 100}>
-                    <div className="gt-soft-card gt-cut-md flex gap-5 p-6">
-                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-theme/10 text-theme">
-                        <item.Icon className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h4 className="mb-1.5 text-header">{item.title}</h4>
-                        <p className="text-sm leading-7 text-txt">{item.desc}</p>
-                      </div>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-
-              <Reveal delay={420}>
-                <div className="mt-10">
-                  <ThemeBtn href="#contact" className="w-full !justify-center">JAVI SE</ThemeBtn>
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════ SERVICES ════════════════════════════ */}
-      <section id="services" className="section-padding section-bg-2 relative">
-        <div className="gt-orb gt-orb--ember h-[380px] w-[380px] -top-10 right-0" aria-hidden="true" />
-        <div className={`${cx} relative z-10`}>
-
-          <Reveal>
-            <div className="mb-14">
-              <div className="gt-section-title">
-                <Eyebrow index="02" label="Vrste saradnje" />
-                <h2>Saradnja <span className="font-serif text-[0.85em] font-normal italic text-theme">(1:1)</span></h2>
-              </div>
-            </div>
-
-            <p className="mb-14 max-w-3xl leading-8 text-txt">
-              Sve je 1:1, uživo ili online. Prvo pričamo o cilju i rasporedu, onda gradim
-              sistem koji možeš da održavaš i kad ti se raspored raspadne. Cijena se dogovara poslije kratkog poziva.
-            </p>
-          </Reveal>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              { num: "01", title: "Start & procjena",     desc: "Prije prvog treninga pričamo o cilju, navikama, rasporedu i onome što ti realno stoji na putu. Plan se pravi oko tebe, ne obrnuto." },
-              { num: "02", title: "Plan & progres",        desc: "Nema kopiranih programa sa interneta. Svaka nedjelja je smišljena za tebe, sa jasnom progresijom: znaš tačno šta radiš i zašto."        },
-              { num: "03", title: "Praćenje & korekcije", desc: "Plan je samo početak. Pratim svaki trening, mijenjam ono što ne radi i javljam se prije nego što ti stigneš da odustaneš." },
-            ].map((item, i) => (
-              <Reveal key={item.num} delay={i * 120} className="h-full">
-                <TiltCard className="gt-glare gt-cut-lg group relative flex h-full flex-col overflow-hidden bg-white p-8 shadow-[0_8px_28px_rgba(0,0,0,0.07)] hover:shadow-[0_20px_48px_rgba(0,0,0,0.11)]">
-                  <div className="absolute right-6 top-5 select-none font-heading text-[72px] font-bold leading-none text-header/[0.05] transition-colors group-hover:text-theme/[0.10]" aria-hidden="true">
-                    {item.num}
-                  </div>
-                  <div className="relative z-10">
-                    <div className="mb-5 h-1.5 w-10 rounded-full bg-theme" />
-                    <h3 className="mb-3 text-header">{item.title}</h3>
-                    <p className="text-sm leading-7 text-txt">{item.desc}</p>
-                  </div>
-                </TiltCard>
-              </Reveal>
-            ))}
-          </div>
-
-          <div className="mt-8 grid gap-5 md:grid-cols-2 md:items-stretch">
-            {[
-              { Icon: DumbbellIcon, title: "Uživo (1:1)",  desc: "U sali, oči u oči. Ispravljam tehniku uživo, prije nego što greška postane navika."       },
-              { Icon: OrbitIcon,    title: "Online (1:1)", desc: "Isti sistem, gdje god da si. Video-provjere forme i plan koji se prilagođava tvom danu." },
-            ].map((item, i) => (
-              <Reveal key={item.title} delay={i * 120} className="h-full">
-                <div className="gt-dark-card gt-cut-lg flex h-full items-center gap-6 p-8 transition-all hover:-translate-y-1">
-                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center gt-cut-sm border-2 border-theme/60 bg-white/[0.05] text-theme">
-                    <item.Icon className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <h4 className="mb-2 text-white">{item.title}</h4>
-                    <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ══════════════════════════ RESULTS ══════════════════════════════ */}
-      <section id="results" className="section-padding relative">
+      <section id="results" className="section-padding section-bg-2 relative">
         <div className="gt-orb gt-orb--red h-[420px] w-[420px] -right-40 top-1/3" aria-hidden="true" />
         <div className="gt-trans-text" aria-hidden="true">REZULTAT</div>
 
         <div className={`${cx} relative z-10`}>
           <Reveal>
             <div className="mb-12 text-center">
-              <Eyebrow index="03" label="Dokaz" className="mx-auto" />
+              <Eyebrow index="01" label="Dokaz" className="mx-auto" />
               <h2 className="mx-auto">Stvarni <span className="font-serif text-[0.85em] font-normal italic text-theme">rezultati</span></h2>
-              <p className="mt-4 text-txt">Realno • Mjerljivo • Održivo</p>
+              <p className="mx-auto mt-4 max-w-xl text-txt">
+                Ljudi iz Banja Luke, sa imenom i slikom, objavljeni uz njihovu saglasnost.
+              </p>
             </div>
           </Reveal>
 
@@ -1321,11 +1317,11 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════ CASE STUDY ═══════════════════════════ */}
-      <section id="case-study" className="section-padding section-bg-2 relative">
+      <section id="case-study" className="section-padding relative">
         <div className="gt-orb gt-orb--ember h-[380px] w-[380px] -left-32 bottom-0" aria-hidden="true" />
         <div className={`${cx} relative z-10`}>
           <Reveal>
-            <Eyebrow index="04" label="Studija slučaja" />
+            <Eyebrow index="02" label="Studija slučaja" />
             <h2 className="max-w-2xl">Kako je Marko skinuo <span className="font-serif text-[0.85em] font-normal italic text-theme">20 kilograma</span></h2>
           </Reveal>
 
@@ -1375,6 +1371,20 @@ export default function Home() {
                 </Reveal>
               </div>
 
+              {/* Najjači argument na sajtu: da je rezultat izdržao i poslije saradnje.
+                  Bez ovoga je "rezultat koji ostaje" samo slogan. */}
+              <Reveal delay={280}>
+                <div className="gt-cut-md mt-8 flex items-center gap-5 border border-theme/30 bg-theme/[0.06] p-6">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center gt-cut-sm bg-theme text-white">
+                    <ShieldIcon className="h-6 w-6" />
+                  </div>
+                  <p className="text-sm font-semibold leading-7 text-header">
+                    Težina je ostala i poslije saradnje, a Marko danas trenira bez mene.
+                    To je jedini rezultat koji stvarno računam.
+                  </p>
+                </div>
+              </Reveal>
+
               <Reveal delay={320}>
                 <blockquote className="gt-cut-md mt-8 border-l-4 border-theme bg-theme/5 p-6">
                   <p className="font-serif text-lg italic leading-8 text-header">&ldquo;Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim.&rdquo;</p>
@@ -1386,8 +1396,252 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ═══════════════════════════ SERVICES ════════════════════════════ */}
+      <section id="services" className="section-padding section-bg-2 relative">
+        <div className="gt-orb gt-orb--ember h-[380px] w-[380px] -top-10 right-0" aria-hidden="true" />
+        <div className={`${cx} relative z-10`}>
+
+          <Reveal>
+            <div className="mb-10">
+              <div className="gt-section-title">
+                <Eyebrow index="03" label="Vrste saradnje" />
+                <h2>Saradnja <span className="font-serif text-[0.85em] font-normal italic text-theme">(1:1)</span></h2>
+              </div>
+            </div>
+
+            <p className="mb-10 max-w-3xl leading-8 text-txt">
+              Sve je 1:1, uživo ili online. Prvo pričamo o cilju i rasporedu, onda gradim
+              sistem koji možeš da održavaš i kad ti se raspored raspadne.
+            </p>
+          </Reveal>
+
+          {/* Za koga jeste i za koga nije — filtrira ljude prije nego što potroše
+              i svoje i Sergejevo vrijeme na razgovor koji nema smisla. */}
+          <Reveal delay={80}>
+            <div className="mb-14 grid gap-5 md:grid-cols-2">
+              <div className="gt-cut-md border border-theme/25 bg-theme/[0.04] p-7">
+                <h4 className="mb-4 text-header">Ovo ti odgovara ako</h4>
+                <ul className="space-y-3">
+                  {[
+                    "kreneš, izdržiš tri nedjelje i onda staneš",
+                    "treniraš već neko vrijeme, a brojke stoje u mjestu",
+                    "hoćeš da smršaš bez dijete koja te slomi",
+                    "imaš posao i porodicu, pa plan mora da se uklopi u to",
+                  ].map((item) => (
+                    <li key={item} className="flex gap-3 text-sm leading-7 text-txt">
+                      <span className="mt-1.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-theme/15 text-theme">
+                        <CheckIcon className="h-2.5 w-2.5" />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="gt-cut-md border border-gray-200 bg-white/70 p-7">
+                <h4 className="mb-4 text-header">Ovo ti ne odgovara ako</h4>
+                <ul className="space-y-3">
+                  {[
+                    "tražiš rezultat za dvije nedjelje, pod svaku cijenu",
+                    "hoćeš gotov plan u PDF formatu i ništa više",
+                    "ne želiš da ti se mjeri i prati napredak",
+                    "očekuješ da trener radi umjesto tebe",
+                  ].map((item) => (
+                    <li key={item} className="flex gap-3 text-sm leading-7 text-txt/75">
+                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-txt/25" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { num: "01", title: "Start & procjena",     desc: "Prije prvog treninga pričamo o cilju, navikama, rasporedu i onome što ti realno stoji na putu. Plan se pravi oko tebe, ne obrnuto." },
+              { num: "02", title: "Plan & progres",        desc: "Nema kopiranih programa sa interneta. Svaka nedjelja je smišljena za tebe, sa jasnom progresijom: znaš tačno šta radiš i zašto."        },
+              { num: "03", title: "Praćenje & korekcije", desc: "Plan je samo početak. Pratim svaki trening, mijenjam ono što ne radi i javljam se prije nego što ti stigneš da odustaneš." },
+            ].map((item, i) => (
+              <Reveal key={item.num} delay={i * 120} className="h-full">
+                <TiltCard className="gt-glare gt-cut-lg group relative flex h-full flex-col overflow-hidden bg-white p-8 shadow-[0_8px_28px_rgba(0,0,0,0.07)] hover:shadow-[0_20px_48px_rgba(0,0,0,0.11)]">
+                  <div className="absolute right-6 top-5 select-none font-heading text-[72px] font-bold leading-none text-header/[0.05] transition-colors group-hover:text-theme/[0.10]" aria-hidden="true">
+                    {item.num}
+                  </div>
+                  <div className="relative z-10">
+                    <div className="mb-5 h-1.5 w-10 rounded-full bg-theme" />
+                    <h3 className="mb-3 text-header">{item.title}</h3>
+                    <p className="text-sm leading-7 text-txt">{item.desc}</p>
+                  </div>
+                </TiltCard>
+              </Reveal>
+            ))}
+          </div>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-2 md:items-stretch">
+            {[
+              {
+                Icon: DumbbellIcon,
+                title: "Uživo (1:1)",
+                desc: "U teretani, oči u oči. Ispravljam tehniku dok radiš, prije nego što greška postane navika.",
+                includes: [
+                  "Procjena i mjerenje na startu",
+                  "Individualni treninzi, nikad grupno",
+                  "Program pisan za tebe, ne šablon",
+                  "Praćenje kilaže, obima i snage",
+                  "Korekcije plana kad brojke stanu",
+                  "Podrška na WhatsApp između treninga",
+                ],
+              },
+              {
+                Icon: OrbitIcon,
+                title: "Online (1:1)",
+                desc: "Isti sistem, gdje god da si. Provjera forme preko videa i plan koji se prilagođava tvom danu.",
+                includes: [
+                  "Uvodna konsultacija i procjena",
+                  "Individualni plan treninga",
+                  "Video analiza tehnike",
+                  "Sedmična provjera napretka",
+                  "Praćenje progresije po vježbama",
+                  "Podrška na WhatsApp",
+                ],
+              },
+            ].map((item, i) => (
+              <Reveal key={item.title} delay={i * 120} className="h-full">
+                <div className="gt-dark-card gt-cut-lg flex h-full flex-col p-8 transition-all hover:-translate-y-1">
+                  <div className="flex items-center gap-6">
+                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center gt-cut-sm border-2 border-theme/60 bg-white/[0.05] text-theme">
+                      <item.Icon className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <h4 className="mb-2 text-white">{item.title}</h4>
+                      <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
+                    </div>
+                  </div>
+
+                  <p className="mb-4 mt-7 text-[11px] font-semibold uppercase tracking-[0.16em] text-theme">Šta dobijaš</p>
+                  <ul className="grid gap-2.5">
+                    {item.includes.map((line) => (
+                      <li key={line} className="flex gap-3 text-sm leading-6 text-white/75">
+                        <span className="mt-1 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-theme/20 text-theme">
+                          <CheckIcon className="h-2.5 w-2.5" />
+                        </span>
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* Cijena se ne krije: objašnjeno je šta je određuje i kad je saznaješ.
+              Bez toga posjetilac pretpostavi najgore i zatvori sajt. */}
+          <Reveal delay={160}>
+            <div className="gt-cut-md mt-8 border border-gray-200 bg-white p-7 sm:p-8">
+              <h4 className="mb-3 text-header">A cijena?</h4>
+              <p className="max-w-3xl leading-8 text-txt">
+                Zavisi od tri stvari: koliko treninga sedmično radiš, da li je uživo ili online i
+                koliko dugo saradnja traje. Tačan iznos dobiješ na prvom razgovoru, prije nego što
+                se na bilo šta obavežeš. Taj razgovor je besplatan i ostaje besplatan i ako
+                odlučiš da ne krećeš.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════ ABOUT ════════════════════════════ */}
+      <section id="about" className="section-padding relative">
+        <div className="gt-orb gt-orb--red h-[420px] w-[420px] -left-32 top-10" aria-hidden="true" />
+        <div className="gt-trans-text" aria-hidden="true">COACHING</div>
+
+        <div className={`${cx} relative z-10`}>
+          <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_1fr]">
+
+            <Reveal variant="scale" className="relative">
+              <div className="gt-cut-lg absolute -left-4 -top-4 -z-10 hidden h-full w-full -rotate-3 border border-theme/25 sm:block" aria-hidden="true" />
+              <div className="grid grid-cols-2 gap-5">
+                <div className="gt-cut-lg relative aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
+                  <Image src="/images/form/sergej-form-1.png" alt="Sergej Janjić, personalni trener u Banja Luci, tokom treninga" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
+                </div>
+                <div className="gt-cut-lg-r relative mt-10 aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
+                  <Image src="/images/form/sergej-form-2.png" alt="Sergej Janjić demonstrira pravilnu tehniku izvođenja vježbe" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
+                </div>
+              </div>
+              <div className="gt-cut-md relative z-10 -mt-10 ml-5 inline-flex items-center gap-3 bg-theme px-6 py-4 shadow-[0_20px_40px_rgba(252,138,23,0.30)]">
+                <span className="font-heading text-3xl font-bold text-white"><Counter value="300+" /></span>
+                <span className="text-sm font-bold uppercase leading-tight text-white/90">Uspješnih<br />saradnji</span>
+              </div>
+            </Reveal>
+
+            <div>
+              <Reveal delay={100}>
+                <div className="gt-section-title">
+                  <Eyebrow index="04" label="O meni" />
+                  <h2>Sergej <span className="font-serif text-[0.9em] font-normal italic text-theme">Janjić</span></h2>
+                </div>
+
+                <p className="mt-7 max-w-xl leading-8 text-txt">
+                  Vidio sam dovoljno ljudi da odustanu poslije dvije nedjelje ekstremne dijete da više ne vjerujem u prečice. Radi jasan plan, iskrena komunikacija i tempo koji možeš da izdržiš, ne tri mjeseca nego trajno.
+                </p>
+                <p className="mt-4 max-w-xl leading-8 text-txt">
+                  Na treningu sam miran i precizan. Ne vičem, ne motivišem parolama. Pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
+                </p>
+
+                {/* Konkretno, provjerljivo, bez samododijeljenih ocjena. */}
+                <dl className="mt-8 grid max-w-xl grid-cols-2 gap-x-6 gap-y-5 border-t border-gray-100 pt-7">
+                  {[
+                    ["300+",        "Saradnji do sada"],
+                    ["1:1",         "Uvijek, nikad grupno"],
+                    ["Banja Luka",  "Uživo, plus online"],
+                    ["24h",         "Odgovor na upit"],
+                  ].map(([big, small]) => (
+                    <div key={small}>
+                      <dt className="font-heading text-xl font-bold leading-none text-theme sm:text-2xl">{big}</dt>
+                      <dd className="mt-2 text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-txt/70">{small}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+
+              <div className="mt-10 space-y-4">
+                {[
+                  { Icon: ShieldIcon, title: "Tehnika & sigurnost", desc: "Loša tehnika te prije ili kasnije izbaci iz stroja. Ispravljam je prije nego što postane problem." },
+                  { Icon: ChartIcon,  title: "Struktura & progres",  desc: "Svaki trening ima razlog. Napredak mjerim brojkama, ne osjećajem."  },
+                ].map((item, i) => (
+                  <Reveal key={item.title} delay={180 + i * 100}>
+                    <div className="gt-soft-card gt-cut-md flex gap-5 p-6">
+                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-theme/10 text-theme">
+                        <item.Icon className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1.5 text-header">{item.title}</h4>
+                        <p className="text-sm leading-7 text-txt">{item.desc}</p>
+                      </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+
+              <Reveal delay={420}>
+                <div className="mt-10">
+                  <ThemeBtn
+                    href="#contact"
+                    onClick={() => track("cta_click", { from: "about" })}
+                    className="w-full !justify-center !text-[13px] sm:!text-sm"
+                  >
+                    {CTA_PRIMARY}
+                  </ThemeBtn>
+                  <p className="mt-3 text-center text-[12px] font-medium text-txt/60">{CTA_NOTE}</p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ══════════════════════════════ FAQ ════════════════════════════════ */}
-      <section id="faq" className="section-padding relative">
+      <section id="faq" className="section-padding section-bg-2 relative">
         <div className="gt-orb gt-orb--red h-[420px] w-[420px] -left-40 top-0" aria-hidden="true" />
         <div className="gt-orb gt-orb--ember h-[360px] w-[360px] -right-32 bottom-10" aria-hidden="true" />
         <div className="gt-trans-text" aria-hidden="true">FAQ</div>
@@ -1422,11 +1676,11 @@ export default function Home() {
           <div className="max-w-4xl">
             <Reveal>
               <Eyebrow index="06" label="Spreman?" light />
-              <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
+              <h2 className="text-white">Ne moraš odlučiti <span className="font-serif text-[0.85em] font-normal italic text-white/90">odmah</span></h2>
 
               <p className="mt-6 max-w-xl leading-8 text-white/65">
-                Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju i vidimo da li se uklapamo.
-                Ako da, kreće plan. Ako ne, bar znaš na čemu si.
+                Prvo pričamo petnaest minuta i vidimo ima li saradnja smisla za tebe. Razgovor je
+                besplatan i bez obaveze. Ako se uklapamo, kreće plan. Ako ne, bar znaš na čemu si.
               </p>
             </Reveal>
 
@@ -1445,9 +1699,10 @@ export default function Home() {
 
             <Reveal delay={260}>
               <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                <ThemeBtn href="#contact" className="w-full sm:w-auto">KONTAKTIRAJ ME</ThemeBtn>
-                <ThemeBtn onClick={openWhatsApp} variant="border" className="w-full sm:w-auto">WHATSAPP UPIT</ThemeBtn>
+                <ThemeBtn href="#contact" onClick={() => track("cta_click", { from: "cta_banner" })} className="w-full sm:w-auto">{CTA_PRIMARY}</ThemeBtn>
+                <ThemeBtn onClick={waFromBanner} variant="border" showArrow={false} className="w-full sm:w-auto">{CTA_WHATSAPP}</ThemeBtn>
               </div>
+              <p className="mt-4 text-[13px] font-medium text-white/50">{CTA_NOTE}</p>
             </Reveal>
           </div>
         </div>
@@ -1461,9 +1716,10 @@ export default function Home() {
           <Reveal>
             <div className="mb-16 text-center">
               <Eyebrow index="07" label="Kontakt" className="mx-auto" />
-              <h2 className="mx-auto">Pošalji <span className="font-serif text-[0.85em] font-normal italic text-theme">upit</span></h2>
+              <h2 className="mx-auto">Zakaži besplatan <span className="font-serif text-[0.85em] font-normal italic text-theme">razgovor</span></h2>
               <p className="mx-auto mt-5 max-w-2xl leading-8 text-txt">
-                Napiši cilj, iskustvo i kad ti odgovara termin. Javljam se sa konkretnim prijedlogom, ne generičkim odgovorom.
+                Napiši cilj, iskustvo i kad ti odgovara termin. Javljam se sa konkretnim prijedlogom
+                i tačnom cijenom, ne generičkim odgovorom.
               </p>
               <div className="mx-auto mt-6 inline-flex items-center gap-2 gt-cut-sm border border-theme/25 bg-theme/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-theme">
                 <span className="relative flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-theme" />
@@ -1478,8 +1734,8 @@ export default function Home() {
               <h3 className="mb-8 text-white">Kontakt info</h3>
 
               {[
-                { Icon: PhoneIcon, label: "Telefon", value: PHONE_DISPLAY, href: `tel:+${PHONE_E164}`, target: undefined },
-                { Icon: PinIcon,   label: "Adresa",  value: ADDRESS,        href: MAPS_LINK,           target: "_blank"  },
+                { Icon: PhoneIcon, label: "Telefon", value: PHONE_DISPLAY, href: `tel:+${PHONE_E164}`, target: undefined, ev: true  },
+                { Icon: PinIcon,   label: "Adresa",  value: ADDRESS,        href: MAPS_LINK,           target: "_blank",  ev: false },
               ].map((item, i) => (
                 <div key={item.label} className={`flex gap-5 py-6 ${i > 0 ? "border-t border-white/[0.08]" : ""}`}>
                   <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-white/[0.08] text-theme">
@@ -1491,6 +1747,7 @@ export default function Home() {
                       href={item.href}
                       target={item.target}
                       rel={item.target ? "noopener noreferrer" : undefined}
+                      onClick={item.ev ? () => track("phone_click", { from: "contact" }) : undefined}
                       className="text-base font-semibold text-white transition hover:text-theme"
                     >
                       {item.value}
@@ -1515,16 +1772,20 @@ export default function Home() {
             </Reveal>
 
             <Reveal variant="right" delay={120} className="gt-soft-card gt-cut-lg p-8 sm:p-10">
-              <h3 className="mb-8 text-header">Pošalji poruku</h3>
+              <h3 className="mb-8 text-header">Pošalji upit</h3>
 
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (form.website) return; // honeypot popunjen → tiho ignoriši, vjerovatno bot
-                const subject = encodeURIComponent(`Upit: ${form.goal} (${form.name || "Anonimno"})`);
-                const body = encodeURIComponent(`Ime: ${form.name || "-"}\nEmail: ${form.email || "-"}\nVrsta saradnje: ${form.mode}\nCilj: ${form.goal}\n\nPoruka:\n${form.message || "-"}`);
-                window.location.href = `mailto:janjicsergejcoaching@gmail.com?subject=${subject}&body=${body}`;
-                router.push("/hvala");
-              }}>
+              <form
+                onChange={onFormTouch}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (form.website) return; // honeypot popunjen → tiho ignoriši, vjerovatno bot
+                  track("lead_submitted", { mode: form.mode, goal: form.goal });
+                  // Šalje se preko WhatsApp-a, jer to radi na svakom telefonu.
+                  // Mailto zavisi od toga da li posjetilac uopšte ima podešen mail program.
+                  const opened = openWhatsApp("form", true);
+                  if (opened) router.push("/hvala");
+                }}
+              >
                 {/* Honeypot — sakriven od ljudi, botovi ga obično popune */}
                 <input
                   type="text"
@@ -1547,11 +1808,12 @@ export default function Home() {
                       onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                     />
                     <input
-                      id="contact-phone" name="phone" type="tel"
+                      id="contact-phone" name="phone" type="tel" required minLength={6}
+                      autoComplete="tel"
                       className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
-                      placeholder="Telefon (opciono)"
-                      value={form.email}
-                      onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                      placeholder="Telefon / WhatsApp *"
+                      value={form.phone}
+                      onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                     />
                   </div>
 
@@ -1579,20 +1841,53 @@ export default function Home() {
                     </select>
                   </div>
 
+                  <select
+                    id="contact-when" name="when"
+                    className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header focus:border-theme"
+                    value={form.when}
+                    onChange={(e) => setForm((p) => ({ ...p, when: e.target.value as typeof form.when }))}
+                  >
+                    <option value="Fleksibilno">Kad ti odgovara trening: fleksibilno</option>
+                    <option value="Ujutro">Ujutro</option>
+                    <option value="Prije podne">Prije podne</option>
+                    <option value="Popodne">Popodne</option>
+                    <option value="Uveče">Uveče</option>
+                  </select>
+
                   <textarea
                     id="contact-message" name="message" required minLength={10}
-                    className="min-h-[180px] w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
-                    placeholder="Poruka (iskustvo, ograničenja, termini...) *"
+                    className="min-h-[150px] w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
+                    placeholder="Šta želiš da postigneš? (iskustvo, ograničenja, povrede...) *"
                     value={form.message}
                     onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
                   />
 
                   <div className="pt-2">
-                    <ThemeBtn type="submit" className="w-full !justify-center">POŠALJI PORUKU</ThemeBtn>
+                    <ThemeBtn type="submit" className="w-full !justify-center">POŠALJI UPIT</ThemeBtn>
                   </div>
 
-                  <p className="text-xs text-txt/50">
-                    * obavezna polja. Klikom na dugme otvara se tvoj mail sa pripremljenom porukom.
+                  <p className="text-xs leading-6 text-txt/60">
+                    * obavezna polja. Upit se otvara u WhatsApp razgovoru sa mnom, sa već
+                    popunjenim tekstom, tako da stvarno i stigne. Odgovaram u roku od 24h.
+                  </p>
+
+                  <p className="text-xs leading-6 text-txt/50">
+                    Ne koristiš WhatsApp?{" "}
+                    <a
+                      href={`mailto:${EMAIL}?subject=${encodeURIComponent("Upit za besplatan uvodni razgovor")}`}
+                      onClick={() => track("email_fallback")}
+                      className="font-semibold text-header underline decoration-theme/40 underline-offset-4 transition hover:text-theme"
+                    >
+                      Piši mi na mail
+                    </a>{" "}
+                    ili{" "}
+                    <a
+                      href={`tel:+${PHONE_E164}`}
+                      onClick={() => track("phone_click", { from: "form" })}
+                      className="font-semibold text-header underline decoration-theme/40 underline-offset-4 transition hover:text-theme"
+                    >
+                      pozovi {PHONE_DISPLAY}
+                    </a>.
                   </p>
                 </div>
               </form>
@@ -1700,7 +1995,7 @@ export default function Home() {
         </div>
       </footer>
 
-      <MobileActionBar onWhatsApp={openWhatsApp} />
+      <MobileActionBar onWhatsApp={waFromBar} />
     </>
   );
 }
