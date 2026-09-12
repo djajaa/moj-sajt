@@ -17,13 +17,13 @@ export default function ThankYouPage() {
 
       <main className="flex min-h-[70vh] items-center bg-[#08090b]">
         <div className="mx-auto w-full max-w-[700px] px-8 py-24 text-center sm:px-10 lg:px-14">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-theme">Još jedan klik</p>
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-theme">Poruka je na putu</p>
           <h1 className="text-white">
-            Skoro gotovo. <span className="font-serif italic font-normal text-theme">Pošalji poruku.</span>
+            Hvala. <span className="font-serif italic font-normal text-theme">Javljam se uskoro.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-md leading-8 text-white/60">
-            Otvorio ti se WhatsApp razgovor sa mnom i poruka je već napisana. Pritisni pošalji u
-            WhatsApp-u, jer dok to ne uradiš upit ne stiže do mene. Odgovaram u roku od 24h.
+            Otvoren ti je mail sa pripremljenom porukom. Provjeri da li je stvarno poslana. Trudim se da
+            odgovorim u roku od 24h.
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
