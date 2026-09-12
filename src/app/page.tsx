@@ -40,7 +40,7 @@ const FAQS = [
   },
   {
     q: "Koja je razlika između uživo i online saradnje?",
-    a: "Uživo treniramo zajedno u sali u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
+    a: "Uživo treniramo zajedno u teretani u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
   },
   {
     q: "Koliko košta saradnja?",
@@ -1281,7 +1281,7 @@ export default function Home() {
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 md:items-stretch">
             {[
-              { Icon: DumbbellIcon, title: "Uživo (1:1)",  desc: "U sali, oči u oči. Ispravljam tehniku uživo, prije nego što greška postane navika."       },
+              { Icon: DumbbellIcon, title: "Uživo (1:1)",  desc: "U teretani, oči u oči. Ispravljam tehniku uživo, prije nego što greška postane navika."       },
               { Icon: OrbitIcon,    title: "Online (1:1)", desc: "Isti sistem, gdje god da si. Video-provjere forme i plan koji se prilagođava tvom danu." },
             ].map((item, i) => (
               <Reveal key={item.title} delay={i * 120} className="h-full">
