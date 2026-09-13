@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Preloader from "./_components/Preloader";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const SERGEJ_IG     = "https://www.instagram.com/janjiccsergej/";
@@ -776,8 +777,8 @@ export default function Home() {
   const [scrolled, setScrolled]             = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [loaded, setLoaded]                 = useState(false);
-  const [loadPct, setLoadPct]               = useState(0);
+  const [showPreloader, setShowPreloader]   = useState(true);
+  const [heroHeld, setHeroHeld]             = useState(true);
   const [wideEnough, setWideEnough]         = useState(false);
 
   const mobileMenuCloseBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -846,27 +847,24 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [reducedMotion]);
 
-  useEffect(() => {
-    if (reducedMotion) { setLoaded(true); return; }
-    let raf = 0;
-    const start = performance.now();
-    const duration = 1300;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      setLoadPct(Math.round(p * 100));
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else setTimeout(() => setLoaded(true), 200);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [reducedMotion]);
+  // Preloader upravlja svojim tokom sam (vidi _components/Preloader.tsx) i
+  // javlja se roditelju tačno dva puta: kad riječ krene da leti u naslov
+  // (otkopčaj ostatak heroa) i kad je sve gotovo (ukloni sloj iz stabla).
+  // Time se izbjegava re-renderovanje cijele stranice 60 puta u sekundi.
+  const handlePreloaderExitStart = useCallback(() => setHeroHeld(false), []);
+  const handlePreloaderGone      = useCallback(() => setShowPreloader(false), []);
 
+  // Sigurnosna mreža nezavisna od Preloader-a: ako iz bilo kog razloga (greška
+  // u toj komponenti, neuobičajen uređaj) nikad ne pozove svoje callback-ove,
+  // hero ne smije ostati zauvijek sakriven niti skrol zauvijek zaključan.
   useEffect(() => {
-    if (loaded) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [loaded]);
+    const safety = window.setTimeout(() => {
+      setHeroHeld(false);
+      setShowPreloader(false);
+      document.body.style.overflow = "";
+    }, 4000);
+    return () => window.clearTimeout(safety);
+  }, []);
 
   const onHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const el = heroGlowRef.current;
@@ -918,13 +916,9 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }} />
 
       {/* Preloader */}
-      <div className={`gt-preloader ${loaded ? "gt-preloader--done" : ""}`} aria-hidden="true">
-        <div className="gt-preloader-inner">
-          <span className="gt-preloader-word">Sergej Janjić</span>
-          <span className="gt-preloader-pct">{loadPct}</span>
-        </div>
-        <div className="gt-preloader-bar"><span style={{ width: `${loadPct}%` }} /></div>
-      </div>
+      {showPreloader && (
+        <Preloader onExitStart={handlePreloaderExitStart} onGone={handlePreloaderGone} />
+      )}
 
       {/* Custom kursor + atmosfera (desktop only) */}
       <CustomCursor active={motionFX} />
@@ -1080,7 +1074,7 @@ export default function Home() {
       </div>
 
       {/* ═══════════════════════════════ HERO ═══════════════════════════ */}
-      <section id="hero" onMouseMove={onHeroMouseMove} className="relative flex min-h-[100svh] items-center overflow-hidden">
+      <section id="hero" onMouseMove={onHeroMouseMove} className={`relative flex min-h-[100svh] items-center overflow-hidden ${heroHeld ? "gt-hold" : ""}`}>
         <div
           ref={heroBgRef}
           className="absolute inset-0 z-0 bg-cover bg-no-repeat"
@@ -1113,9 +1107,9 @@ export default function Home() {
               </div>
             </Reveal>
 
-            <Reveal delay={160}>
+            <Reveal delay={160} className="gt-hero-h1-reveal">
               <h1 className="text-[clamp(3.2rem,9vw,7rem)] font-bold leading-[0.92] tracking-[-0.04em] text-white">
-                SISTEM, NE NAGAĐANJE.
+                <span data-pl-target>SISTEM</span>, NE NAGAĐANJE.
                 <br />
                 <span className="gt-gradient-text">REZULTAT</span>{" "}
                 <span className="font-serif text-[0.8em] font-normal italic text-white/90">koji ostaje</span>

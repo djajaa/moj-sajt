@@ -711,6 +711,16 @@ select:focus {
   .gt-reveal { opacity: 1; transform: none; transition: none; }
 }
 
+/* Dok preloader radi, ostatak heroa (osim naslova, koji mora biti slegnut da
+   bi se izmjerila tačna pozicija za dolazak riječi iz preloadera) čeka iza
+   zastora umjesto da završi animaciju nevidljivo. Kad riječ sleti, klasa se
+   skine i tekst se poređa oko nje na svojim postojećim kašnjenjima. */
+.gt-hold .gt-reveal:not(.gt-hero-h1-reveal) {
+  opacity: 0 !important;
+  transform: translate3d(0, 26px, 0) !important;
+  transition: none !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    3D TILT CARDS
 ═══════════════════════════════════════════════════════════════════════════ */
@@ -734,55 +744,147 @@ select:focus {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PRELOADER — postotak + curtain wipe reveal
+   PRELOADER ("REGISTAR") — riječ SISTEM u pet traka koje sjedaju na mjesto,
+   pa fizički odleti u hero naslov dok se zastor diže dijagonalno
 ═══════════════════════════════════════════════════════════════════════════ */
-.gt-preloader {
+.gt-pl {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 26px;
+  contain: layout paint;
+}
+
+.gt-pl-panel {
+  position: fixed;
+  inset: 0;
   background: var(--gt-ink);
-  clip-path: inset(0 0 0% 0);
-  transition: clip-path 0.9s var(--ease-out-expo);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.gt-preloader--done { clip-path: inset(0 0 100% 0); pointer-events: none; }
+/* Osvijetljena ivica koja se pojavi tek na izlasku — bez nje je crni zastor
+   koji se diže preko skoro crnog heroa nevidljiv pokret. */
+.gt-pl-panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gt-ember) 30%, var(--gt-ember) 70%, transparent);
+  opacity: 0;
+  transition: opacity 160ms linear;
+}
 
-.gt-preloader-inner { display: flex; align-items: baseline; gap: 16px; }
+.gt-pl[data-state="exit"] .gt-pl-panel {
+  will-change: clip-path;
+  transition: clip-path 560ms var(--ease-out-expo);
+  clip-path: polygon(0 -34%, 100% -14%, 100% 100%, 0 100%);
+}
 
-.gt-preloader-word {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  font-size: clamp(18px, 4vw, 26px);
-  color: rgba(255, 255, 255, 0.85);
+.gt-pl[data-state="exit"] .gt-pl-panel::before { opacity: 1; }
+
+.gt-pl-stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 6vw;
+}
+
+.gt-pl-block {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  transform: scale(var(--pl-scale, 1.045));
+  transition: transform 320ms var(--ease-out-expo);
+  will-change: transform;
+}
+
+.gt-pl-meta {
+  align-self: flex-start;
+  margin-bottom: 0.9em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.5);
+  transition: opacity 140ms linear, transform 220ms var(--ease-out-expo);
 }
 
-.gt-preloader-pct {
+.gt-pl[data-state="exit"] .gt-pl-meta { opacity: 0; transform: translate3d(0, -6px, 0); }
+
+.gt-pl-word {
+  position: relative;
+  width: max-content;
+  font-size: min(27vw, 25vh);
+  line-height: 0.86;
+}
+
+.gt-pl[data-state="exit"] .gt-pl-word { transition: opacity 150ms linear 460ms; }
+
+/* Sve pet traka su position:absolute (moraju biti, da bi se slagale jedna
+   preko druge), pa roditelju ne ostaje ništa u toku da bi izračunao
+   max-content širinu — bez ovog elementa .gt-pl-word kolabira na 0. On je
+   nevidljiv ali zauzima prostor, i jedini font-heading/weight/tracking koji
+   se mijenja mora se mijenjati i ovdje, inače mjerenje za FLIP izlazak puca. */
+.gt-pl-word-sizer {
+  visibility: hidden;
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: inherit;
+  line-height: inherit;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.gt-pl-band {
+  position: absolute;
+  inset: 0;
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: inherit;
+  line-height: inherit;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--gt-theme);
+  transform: translate3d(var(--dx), 0, 0);
+  transition: transform 380ms var(--ease-out-expo), color 260ms linear;
+}
+
+.gt-pl-band[data-locked="1"] { transform: translate3d(0, 0, 0); color: #ffffff; }
+
+/* Pet traka, po 20% visine, ivice namjerno neravnomjerne (ne sinusoida) da
+   izgleda kao pomjeren otisak, ne kao dekorativni glič efekat. */
+.gt-pl-band[data-i="0"] { clip-path: inset(0%  0 80% 0); --dx:  4.0%; }
+.gt-pl-band[data-i="1"] { clip-path: inset(20% 0 60% 0); --dx: -3.2%; }
+.gt-pl-band[data-i="2"] { clip-path: inset(40% 0 40% 0); --dx:  2.4%; }
+.gt-pl-band[data-i="3"] { clip-path: inset(60% 0 20% 0); --dx: -3.6%; }
+.gt-pl-band[data-i="4"] { clip-path: inset(80% 0  0% 0); --dx:  3.0%; }
+
+.gt-pl-count {
+  align-self: flex-end;
+  display: flex;
+  margin-top: 0.3em;
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(20px, 4vw, 28px);
-  color: var(--gt-theme);
-  min-width: 2.4ch;
+  font-size: clamp(28px, 7vw, 52px);
+  line-height: 1;
+  color: var(--gt-ember);
+  transition: opacity 180ms linear, transform 220ms var(--ease-out-expo);
 }
 
-.gt-preloader-bar {
-  width: 200px;
-  height: 2px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.12);
-}
+.gt-pl-count span { display: inline-block; width: 0.62em; text-align: center; }
 
-.gt-preloader-bar span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--gt-theme), var(--gt-ember));
-  transition: width 0.1s linear;
+.gt-pl[data-state="exit"] .gt-pl-count { opacity: 0; transform: translate3d(0, 8px, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-pl { display: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
