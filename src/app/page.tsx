@@ -40,12 +40,16 @@ const FAQS = [
     a: "Prve promjene u snazi i osjećaju obično se vide za tri do četiri nedjelje. Vidljiva promjena izgleda traje duže i zavisi od cilja, doslednosti i polazne tačke, zato ne dajem univerzalan broj.",
   },
   {
+    q: "Možeš li garantovati rezultat?",
+    a: "Ako pratiš plan i uputstva onako kako se dogovorimo, rezultat je zagarantovan. Jedini način da ovo ne uspije je da ono što ti dam ne primjenjuješ u praksi.",
+  },
+  {
     q: "Koja je razlika između uživo i online saradnje?",
     a: "Uživo treniramo zajedno u teretani u Banja Luci, sa direktnom korekcijom tehnike. Online dobijaš isti nivo plana i praćenja, uz video provjere forme. Biraš prema tome gdje živiš i šta ti više odgovara.",
   },
   {
     q: "Koliko košta saradnja?",
-    a: "Zavisi od cilja, učestalosti i vrste saradnje, pa cijenu dogovaramo nakon kratkog razgovora. Ne postoji fiksni paket za sve.",
+    a: "Za uživo saradnju cijena zavisi od broja treninga sedmično, tvojih zahtjeva i dogovorenih termina, pa je utvrđujemo nakon kratkog poziva. Online saradnja ima fiksnu cijenu od 120 € mjesečno.",
   },
   {
     q: "Šta ako imam povredu ili zdravstveno ograničenje?",
@@ -145,6 +149,14 @@ function ChartIcon({ className = "h-6 w-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M4 20V10M10 20V4M16 20v-7M2.5 20h19" />
+    </svg>
+  );
+}
+function HeartPulseIcon({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 20c-3.6-2.7-8-6.2-8-10.4C4 6.8 6.1 4.8 8.7 4.8c1.5 0 2.9.7 3.3 1.9.4-1.2 1.8-1.9 3.3-1.9 2.6 0 4.7 2 4.7 4.8 0 4.2-4.4 7.7-8 10.4Z" />
+      <path d="M6 11h2.3l1.4-2.8 2 5.6 1.4-2.8H16" />
     </svg>
   );
 }
@@ -742,10 +754,7 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
               />
             </div>
             <div className="p-6">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <h3 className="text-base font-bold text-header">{item.name}</h3>
-                <span className="font-serif text-base italic text-theme">5.0</span>
-              </div>
+              <h3 className="mb-2 text-base font-bold text-header">{item.name}</h3>
               <p className="text-sm leading-7 text-txt">&ldquo;{item.quote}&rdquo;</p>
             </div>
           </div>
@@ -1131,7 +1140,7 @@ export default function Home() {
 
             <Reveal delay={500} variant="scale">
               <div className="gt-cut-lg mt-14 flex max-w-lg items-start justify-between gap-3 border border-white/[0.10] bg-white/[0.05] p-5 backdrop-blur-md sm:gap-6 sm:p-7">
-                {([["300+","Saradnji"],["1:1","Pristup"],["100%","Posvećenost"]] as const).map(([big,small]) => (
+                {([["400+","Saradnji"],["1:1","Pristup"],["100%","Posvećenost"]] as const).map(([big,small]) => (
                   <div key={small} className="min-w-0">
                     <div className="font-heading text-2xl font-bold leading-none text-theme sm:text-[2.2rem]"><Counter value={big} /></div>
                     <div className="mt-2 whitespace-nowrap text-[9px] font-semibold uppercase leading-tight tracking-[0.08em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">{small}</div>
@@ -1184,7 +1193,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="gt-cut-md relative z-10 -mt-10 ml-5 inline-flex items-center gap-3 bg-theme px-6 py-4 shadow-[0_20px_40px_rgba(252,138,23,0.30)]">
-                <span className="font-heading text-3xl font-bold text-white"><Counter value="300+" /></span>
+                <span className="font-heading text-3xl font-bold text-white"><Counter value="400+" /></span>
                 <span className="text-sm font-bold uppercase leading-tight text-white/90">Uspješnih<br />saradnji</span>
               </div>
             </Reveal>
@@ -1200,14 +1209,15 @@ export default function Home() {
                   Vidio sam dovoljno ljudi da odustanu poslije dvije nedjelje ekstremne dijete da više ne vjerujem u prečice. Radi jasan plan, iskrena komunikacija i tempo koji možeš da izdržiš, ne tri mjeseca nego trajno.
                 </p>
                 <p className="mt-4 max-w-xl leading-8 text-txt">
-                  Na treningu sam miran i precizan. Ne vičem, ne motivišem parolama. Pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
+                  Radiš direktno sa mnom, ne sa nekim od zaposlenih: dogovor, trening i komunikacija idu preko mene od prvog do posljednjeg dana. Pratim brojke, pravim korekcije i gradim naviku koja ostaje i kad mene nema.
                 </p>
               </Reveal>
 
               <div className="mt-10 space-y-4">
                 {[
-                  { Icon: ShieldIcon, title: "Tehnika & sigurnost", desc: "Loša tehnika te prije ili kasnije izbaci iz stroja. Ispravljam je prije nego što postane problem." },
+                  { Icon: ShieldIcon, title: "Tehnika & sigurnost", desc: "Loša tehnika prije ili kasnije dovede do povrede. Ispravljam je prije nego što postane problem." },
                   { Icon: ChartIcon,  title: "Struktura & progres",  desc: "Svaki trening ima razlog. Napredak mjerim brojkama, ne osjećajem."  },
+                  { Icon: HeartPulseIcon, title: "Zdravlje & stanje", desc: "Izgled bez zdravlja ne znači ništa. Pratim i tvoje opšte zdravstveno stanje, ne samo brojke na vagi." },
                 ].map((item, i) => (
                   <Reveal key={item.title} delay={180 + i * 100}>
                     <div className="gt-soft-card gt-cut-md flex gap-5 p-6">
@@ -1248,7 +1258,7 @@ export default function Home() {
 
             <p className="mb-14 max-w-3xl leading-8 text-txt">
               Sve je 1:1, uživo ili online. Prvo pričamo o cilju i rasporedu, onda gradim
-              sistem koji možeš da održavaš i kad ti se raspored raspadne. Cijena se dogovara poslije kratkog poziva.
+              sistem koji možeš da održavaš i kad ti se raspored raspadne.
             </p>
           </Reveal>
 
@@ -1275,18 +1285,29 @@ export default function Home() {
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 md:items-stretch">
             {[
-              { Icon: DumbbellIcon, title: "Uživo (1:1)",  desc: "U teretani, oči u oči. Ispravljam tehniku uživo, prije nego što greška postane navika."       },
-              { Icon: OrbitIcon,    title: "Online (1:1)", desc: "Isti sistem, gdje god da si. Video-provjere forme i plan koji se prilagođava tvom danu." },
+              {
+                Icon: DumbbellIcon, title: "Uživo (1:1)",
+                desc: "U teretani, oči u oči. Ispravljam tehniku uživo, prije nego što greška postane navika.",
+                price: "Cijena: po dogovoru, prema broju treninga, tvojim zahtjevima i terminima",
+              },
+              {
+                Icon: OrbitIcon, title: "Online (1:1)",
+                desc: "Isti sistem, gdje god da si. Prilagođavam se tvom danu, opremi koju imaš na raspolaganju i tempu koji ti odgovara, uz video provjere forme.",
+                price: "Cijena: 120 € mjesečno",
+              },
             ].map((item, i) => (
               <Reveal key={item.title} delay={i * 120} className="h-full">
-                <div className="gt-dark-card gt-cut-lg flex h-full items-center gap-6 p-8 transition-all hover:-translate-y-1">
-                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center gt-cut-sm border-2 border-theme/60 bg-white/[0.05] text-theme">
-                    <item.Icon className="h-7 w-7" />
+                <div className="gt-dark-card gt-cut-lg flex h-full flex-col gap-6 p-8 transition-all hover:-translate-y-1">
+                  <div className="flex items-center gap-6">
+                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center gt-cut-sm border-2 border-theme/60 bg-white/[0.05] text-theme">
+                      <item.Icon className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <h4 className="mb-2 text-white">{item.title}</h4>
+                      <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="mb-2 text-white">{item.title}</h4>
-                    <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
-                  </div>
+                  <p className="border-t border-white/[0.08] pt-5 text-sm font-semibold text-theme">{item.price}</p>
                 </div>
               </Reveal>
             ))}
@@ -1310,6 +1331,12 @@ export default function Home() {
 
           <Reveal delay={120}>
             <Coverflow items={TESTIMONIALS} />
+          </Reveal>
+
+          <Reveal delay={200}>
+            <p className="mt-6 text-center text-xs text-txt/45">
+              Sve fotografije objavljene su uz saglasnost klijenata čije su.
+            </p>
           </Reveal>
         </div>
       </section>
@@ -1413,34 +1440,50 @@ export default function Home() {
         <div className="absolute inset-0 bg-[#08090b]/92" />
 
         <div className={`${cx} relative z-10`}>
-          <div className="max-w-4xl">
-            <Reveal>
-              <Eyebrow index="06" label="Spreman?" light />
-              <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
+          <div className="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div className="max-w-2xl">
+              <Reveal>
+                <Eyebrow index="06" label="Spreman?" light />
+                <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
 
-              <p className="mt-6 max-w-xl leading-8 text-white/65">
-                Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju i vidimo da li se uklapamo.
-                Ako da, kreće plan. Ako ne, bar znaš na čemu si.
-              </p>
-            </Reveal>
+                <p className="mt-6 max-w-xl leading-8 text-white/65">
+                  Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju, prilagođavam se tvojim
+                  planovima, navikama i svakodnevnom režimu, pa kreće plan pisan za tebe.
+                </p>
+              </Reveal>
 
-            <Reveal delay={140}>
-              <ul className="mt-10 grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-3">
-                {["Raspored oko tvog života","Direktna linija do mene","Plan pisan za tebe","Korekcije iz nedjelje u nedjelju","Bez gotovih šablona","Rezultat koji traje"].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-base font-semibold text-white/85 sm:text-lg">
-                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-theme/20 text-theme">
-                      <CheckIcon className="h-3.5 w-3.5" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
+              <Reveal delay={140}>
+                <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {["Raspored oko tvog života","Direktna linija do mene","Plan pisan za tebe","Korekcije iz nedjelje u nedjelju","Bez gotovih šablona","Rezultat koji traje"].map((item) => (
+                    <li key={item} className="gt-cut-sm flex items-center gap-2.5 border border-white/[0.10] bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/85 backdrop-blur-sm transition hover:border-theme/40 hover:bg-white/[0.07]">
+                      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-theme/20 text-theme">
+                        <CheckIcon className="h-3 w-3" />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
 
-            <Reveal delay={260}>
-              <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                <ThemeBtn href="#contact" className="w-full sm:w-auto">KONTAKTIRAJ ME</ThemeBtn>
-                <ThemeBtn onClick={openWhatsApp} variant="border" className="w-full sm:w-auto">WHATSAPP UPIT</ThemeBtn>
+              <Reveal delay={260}>
+                <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+                  <ThemeBtn href="#contact" className="w-full sm:w-auto">KONTAKTIRAJ ME</ThemeBtn>
+                  <ThemeBtn onClick={openWhatsApp} variant="border" className="w-full sm:w-auto">WHATSAPP UPIT</ThemeBtn>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal variant="scale" delay={180}>
+              <div className="gt-cut-lg border border-white/[0.12] bg-white/[0.05] p-8 backdrop-blur-md sm:p-9">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-theme">Zašto sad</p>
+                <div className="mt-7 space-y-6">
+                  {([["400+","Uspješnih saradnji"],["24h","Odgovor na upit"],["1:1","Uvijek, nikad grupno"]] as const).map(([big, small]) => (
+                    <div key={small} className="flex items-baseline justify-between gap-4 border-b border-white/[0.08] pb-6 last:border-0 last:pb-0">
+                      <span className="font-heading text-3xl font-bold text-white sm:text-4xl">{big}</span>
+                      <span className="text-right text-xs font-semibold uppercase tracking-[0.1em] text-white/50">{small}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </Reveal>
           </div>

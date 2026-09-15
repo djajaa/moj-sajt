@@ -48,8 +48,12 @@ export default function TermsPage() {
 
           <Section n="02" title="Cijena i plaćanje">
             <p>
-              Cijena zavisi od cilja, dinamike i vrste saradnje (uživo/online) i dogovara se nakon uvodnog
-              razgovora. Na sajtu namjerno nema fiksnog cjenovnika, jer se svaki plan pravi za konkretnu osobu.
+              Cijena za uživo saradnju zavisi od broja treninga sedmično, tvojih zahtjeva i dogovorenih
+              termina, i utvrđuje se nakon kratkog poziva. Online saradnja ima fiksnu cijenu od 120 € mjesečno.
+            </p>
+            <p>
+              Sve cijene objavljene na sajtu mogu se mijenjati u bilo kom trenutku. Ako je saradnja već
+              dogovorena, izmjena cijene ne važi retroaktivno za tebe dok o njoj ne budeš obaviješten/na.
               Način i dinamika plaćanja se dogovaraju prije početka saradnje.
             </p>
           </Section>
@@ -77,9 +81,10 @@ export default function TermsPage() {
 
           <Section n="05" title="Rezultati">
             <p>
-              Rezultati prikazani na sajtu (transformacije, brojke) stvarni su i pripadaju konkretnim klijentima,
-              ali nisu garancija. Napredak zavisi od doslednosti, ishrane, sna, genetike i truda svake osobe
-              pojedinačno. Ne obećavam konkretan rezultat u konkretnom roku.
+              Rezultati prikazani na sajtu (transformacije, brojke) stvarni su i pripadaju konkretnim
+              klijentima. Ako dosljedno pratiš dogovoreni plan i uputstva, rezultat je izvjestan, ali finalni
+              ishod i brzina napretka uvijek zavise i od faktora van treninga: ishrane, sna i genetike. Ne
+              obećavam konkretan rezultat u tačno određenom roku.
             </p>
           </Section>
 
