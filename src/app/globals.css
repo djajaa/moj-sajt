@@ -243,6 +243,25 @@ html.gt-cursor-active .gt-cursor-ring {
   color: transparent;
 }
 
+/* Ista ideja, ali boja polako klizi kroz slovo umjesto da stoji fiksna */
+.gt-gradient-text--live {
+  background: linear-gradient(100deg, var(--gt-theme) 0%, var(--gt-ember) 35%, var(--gt-theme) 70%, var(--gt-ember) 100%);
+  background-size: 260% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gt-text-shift 7s linear infinite;
+}
+
+@keyframes gt-text-shift {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-gradient-text--live { animation: none; background-position: 0% 0; }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    EYEBROW TAG — zamjena za generički "✦ LABEL" pattern
 ═══════════════════════════════════════════════════════════════════════════ */
@@ -500,6 +519,48 @@ select:focus {
     0 0 0 1px rgba(255, 255, 255, 0.06),
     0 12px 32px rgba(0, 0, 0, 0.30),
     0 32px 60px rgba(0, 0, 0, 0.22);
+}
+
+/* Živa varijanta gt-dark-card — boja sporo "diše" kroz karticu umjesto da
+   stoji fiksna. Koristi se selektivno (Kontakt info), ne svugdje. */
+.gt-dark-card--live {
+  background:
+    radial-gradient(ellipse 85% 65% at 12% 0%, rgba(252, 138, 23, 0.24), transparent 62%),
+    radial-gradient(ellipse 75% 60% at 100% 100%, rgba(184, 87, 8, 0.30), transparent 65%),
+    linear-gradient(160deg, #1c2028 0%, #14171d 50%, #0e1014 100%);
+  background-size: 200% 200%, 200% 200%, 100% 100%;
+  background-position: 0% 30%, 100% 70%, 0 0;
+  animation: gt-live-shift 16s ease-in-out infinite alternate;
+}
+
+@keyframes gt-live-shift {
+  0%   { background-position: 0% 30%,  100% 70%, 0 0; }
+  100% { background-position: 40% 0%,  60% 100%, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-dark-card--live { animation: none; }
+}
+
+/* Prstenovi koji se šire i gase iza ikonice, kao signal koji se šalje */
+.gt-signal { position: relative; }
+.gt-signal-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid var(--gt-ember);
+  animation: gt-signal-ping 3.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.gt-signal-ring:nth-child(2) { animation-delay: 1.07s; }
+.gt-signal-ring:nth-child(3) { animation-delay: 2.14s; }
+
+@keyframes gt-signal-ping {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-signal-ring { animation: none; opacity: 0; }
 }
 
 /* Premium sheen sweep na hover — koristi se selektivno, ne generički svugdje */

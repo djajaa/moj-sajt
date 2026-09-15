@@ -1585,45 +1585,29 @@ export default function Home() {
       {/* ══════════════════════════ CONTACT ══════════════════════════════ */}
       <section id="contact" className="section-padding relative">
         <div className="gt-orb gt-orb--ember h-[380px] w-[380px] -left-20 bottom-0" aria-hidden="true" />
+        <div className="gt-orb gt-orb--red h-[320px] w-[320px] -right-24 top-10" aria-hidden="true" />
         <div className={`${cx} relative z-10`}>
 
           <Reveal>
             <div className="mb-16 text-center">
               <Eyebrow index="07" label="Kontakt" className="mx-auto" />
-              <h2 className="mx-auto">Pošalji <span className="font-serif text-[0.85em] font-normal italic text-theme">upit</span></h2>
+              <h2 className="mx-auto">Pošalji <span className="font-serif text-[0.85em] font-normal italic text-theme gt-gradient-text--live">upit</span></h2>
               <p className="mx-auto mt-5 max-w-2xl leading-8 text-txt">
                 Napiši cilj, iskustvo i kad ti odgovara termin. Javljam se sa konkretnim prijedlogom, ne generičkim odgovorom.
               </p>
               <div className="mx-auto mt-6 inline-flex items-center gap-2 gt-cut-sm border border-theme/25 bg-theme/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-theme">
-                <span className="relative flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-theme" />
+                <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-theme opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-theme" />
+                </span>
                 Odgovaram u roku od 24h
               </div>
             </div>
           </Reveal>
 
-          <Reveal delay={80}>
-            <div className="mb-10 grid gap-5 sm:grid-cols-3">
-              {[
-                ["01", "Pošalješ upit",     "Forma ispod ili direktno na WhatsApp, kako ti je lakše."],
-                ["02", "Javljam se za 24h", "Konkretan prijedlog za tebe, ne generički odgovor."],
-                ["03", "Dogovorimo termin", "Prvi razgovor je besplatan i bez obaveze."],
-              ].map(([num, title, desc]) => (
-                <div key={num} className="gt-cut-md relative overflow-hidden border border-gray-100 bg-white p-6">
-                  <span className="absolute right-4 top-2 select-none font-heading text-[52px] font-bold leading-none text-header/[0.05]" aria-hidden="true">
-                    {num}
-                  </span>
-                  <div className="relative z-10">
-                    <h4 className="mb-1.5 text-header">{title}</h4>
-                    <p className="text-sm leading-7 text-txt">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
           <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
 
-            <Reveal variant="left" className="gt-dark-card gt-cut-lg p-8 sm:p-10">
+            <Reveal variant="left" className="gt-dark-card gt-dark-card--live gt-cut-lg p-8 sm:p-10">
               <h3 className="mb-8 text-white">Kontakt info</h3>
 
               {[
@@ -1631,8 +1615,11 @@ export default function Home() {
                 { Icon: PinIcon,   label: "Adresa",  value: ADDRESS,        href: MAPS_LINK,           target: "_blank"  },
               ].map((item, i) => (
                 <div key={item.label} className={`flex gap-5 py-6 ${i > 0 ? "border-t border-white/[0.08]" : ""}`}>
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-white/[0.08] text-theme">
-                    <item.Icon className="h-5 w-5" />
+                  <div className="gt-signal relative flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-white/[0.08] text-theme">
+                    <span className="gt-signal-ring" aria-hidden="true" />
+                    <span className="gt-signal-ring" aria-hidden="true" />
+                    <span className="gt-signal-ring" aria-hidden="true" />
+                    <item.Icon className="relative z-10 h-5 w-5" />
                   </div>
                   <div>
                     <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">{item.label}</p>
