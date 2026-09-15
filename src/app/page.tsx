@@ -1615,11 +1615,8 @@ export default function Home() {
                 { Icon: PinIcon,   label: "Adresa",  value: ADDRESS,        href: MAPS_LINK,           target: "_blank"  },
               ].map((item, i) => (
                 <div key={item.label} className={`flex gap-5 py-6 ${i > 0 ? "border-t border-white/[0.08]" : ""}`}>
-                  <div className="gt-signal relative flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-white/[0.08] text-theme">
-                    <span className="gt-signal-ring" aria-hidden="true" />
-                    <span className="gt-signal-ring" aria-hidden="true" />
-                    <span className="gt-signal-ring" aria-hidden="true" />
-                    <item.Icon className="relative z-10 h-5 w-5" />
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center gt-cut-sm bg-white/[0.08] text-theme">
+                    <item.Icon className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">{item.label}</p>
