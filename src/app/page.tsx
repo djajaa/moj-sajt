@@ -87,10 +87,10 @@ const LOCAL_BUSINESS_SCHEMA = {
 const TESTIMONIALS = [
   { src: "/images/transformations/client-1.png", name: "Aleksa",  quote: "Trenirao sam profesionalno godinama i mislio da znam sve o treningu. Sergej mi je za mjesec dana pokazao koliko sam pogrešno radio bazu." },
   { src: "/images/transformations/client-2.png", name: "Luka",    quote: "Znao sam šta treba da radim, samo nisam imao ko da me drži za riječ. Sad nemam izgovor: primijeti odmah kad počnem da popuštam." },
-  { src: "/images/transformations/client-3.jpg", name: "Marko",   quote: "104kg → 84kg za sedam mjeseci, bez gladovanja i bez ijedne povrede. Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim." },
+  { src: "/images/transformations/client-3.jpg", name: "Marko",   quote: "Smršao sam sa 104 na 84 kilograma za sedam mjeseci, bez gladovanja i bez ijedne povrede. Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim." },
   { src: "/images/transformations/client-4.png", name: "Jovan",   quote: "Gledam slike od prije godinu dana i ne prepoznajem se. Nisam očekivao da ću ikad ovako izgledati, a kamoli da ću uživati u procesu." },
   { src: "/images/transformations/client-5.png", name: "Danilo",  quote: "Na prvom treningu mi je Sergej objasnio tačno šta radimo i zašto. Poslije toliko pokušaja sa programima sa interneta, to mi je bilo skoro čudno." },
-  { src: "/images/transformations/client-6.jpg", name: "Sergej",  quote: "57kg → 62kg čiste mase, bez ijednog kilograma masti navrh. Kad ljudima kažem kako, ne vjeruju da nisam koristio ništa osim treninga i hrane." },
+  { src: "/images/transformations/client-6.jpg", name: "Sergej",  quote: "Dodao sam pet kilograma čiste mase, sa 57 na 62 kilograma, bez ijednog kilograma masti navrh. Kad ljudima kažem kako, ne vjeruju da nisam koristio ništa osim treninga i hrane." },
 ];
 
 // ─── Studije slučaja — dva različita polazišta, isti sistem ───────────────────
@@ -1548,50 +1548,34 @@ export default function Home() {
         <div className="absolute inset-0 bg-[#08090b]/92" />
 
         <div className={`${cx} relative z-10`}>
-          <div className="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-            <div className="max-w-2xl">
-              <Reveal>
-                <Eyebrow index="06" label="Spreman?" light />
-                <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
+          <div className="max-w-4xl">
+            <Reveal>
+              <Eyebrow index="06" label="Spreman?" light />
+              <h2 className="text-white">Sljedeći korak je <span className="font-serif text-[0.85em] font-normal italic text-white/90">jedna poruka</span></h2>
 
-                <p className="mt-6 max-w-xl leading-8 text-white/65">
-                  Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju, prilagođavam se tvojim
-                  planovima, navikama i svakodnevnom režimu, pa kreće plan pisan za tebe.
-                </p>
-              </Reveal>
+              <p className="mt-6 max-w-xl leading-8 text-white/65">
+                Prvi razgovor je besplatan i bez obaveze. Pričamo o cilju, prilagođavam se tvojim
+                planovima, navikama i svakodnevnom režimu, pa kreće plan pisan za tebe.
+              </p>
+            </Reveal>
 
-              <Reveal delay={140}>
-                <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {["Raspored oko tvog života","Direktna linija do mene","Plan pisan za tebe","Korekcije iz nedjelje u nedjelju","Bez gotovih šablona","Rezultat koji traje"].map((item) => (
-                    <li key={item} className="gt-cut-sm flex items-center gap-2.5 border border-white/[0.10] bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/85 backdrop-blur-sm transition hover:border-theme/40 hover:bg-white/[0.07]">
-                      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-theme/20 text-theme">
-                        <CheckIcon className="h-3 w-3" />
-                      </span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
+            <Reveal delay={140}>
+              <ul className="mt-10 grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-3">
+                {["Raspored oko tvog života","Direktna linija do mene","Plan pisan za tebe","Korekcije iz nedjelje u nedjelju","Bez gotovih šablona","Rezultat koji traje"].map((item) => (
+                  <li key={item} className="flex items-center gap-3 text-base font-semibold text-white/85 sm:text-lg">
+                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-theme/20 text-theme">
+                      <CheckIcon className="h-3.5 w-3.5" />
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
 
-              <Reveal delay={260}>
-                <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                  <ThemeBtn href="#contact" className="w-full sm:w-auto">KONTAKTIRAJ ME</ThemeBtn>
-                  <ThemeBtn onClick={openWhatsApp} variant="border" className="w-full sm:w-auto">WHATSAPP UPIT</ThemeBtn>
-                </div>
-              </Reveal>
-            </div>
-
-            <Reveal variant="scale" delay={180}>
-              <div className="gt-cut-lg border border-white/[0.12] bg-white/[0.05] p-8 backdrop-blur-md sm:p-9">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-theme">Zašto sad</p>
-                <div className="mt-7 space-y-6">
-                  {([["400+","Uspješnih saradnji"],["24h","Odgovor na upit"],["1:1","Uvijek, nikad grupno"]] as const).map(([big, small]) => (
-                    <div key={small} className="flex items-baseline justify-between gap-4 border-b border-white/[0.08] pb-6 last:border-0 last:pb-0">
-                      <span className="font-heading text-3xl font-bold text-white sm:text-4xl">{big}</span>
-                      <span className="text-right text-xs font-semibold uppercase tracking-[0.1em] text-white/50">{small}</span>
-                    </div>
-                  ))}
-                </div>
+            <Reveal delay={260}>
+              <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+                <ThemeBtn href="#contact" className="w-full sm:w-auto">KONTAKTIRAJ ME</ThemeBtn>
+                <ThemeBtn onClick={openWhatsApp} variant="border" className="w-full sm:w-auto">WHATSAPP UPIT</ThemeBtn>
               </div>
             </Reveal>
           </div>
@@ -1614,6 +1598,26 @@ export default function Home() {
                 <span className="relative flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-theme" />
                 Odgovaram u roku od 24h
               </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <div className="mb-10 grid gap-5 sm:grid-cols-3">
+              {[
+                ["01", "Pošalješ upit",     "Forma ispod ili direktno na WhatsApp, kako ti je lakše."],
+                ["02", "Javljam se za 24h", "Konkretan prijedlog za tebe, ne generički odgovor."],
+                ["03", "Dogovorimo termin", "Prvi razgovor je besplatan i bez obaveze."],
+              ].map(([num, title, desc]) => (
+                <div key={num} className="gt-cut-md relative overflow-hidden border border-gray-100 bg-white p-6">
+                  <span className="absolute right-4 top-2 select-none font-heading text-[52px] font-bold leading-none text-header/[0.05]" aria-hidden="true">
+                    {num}
+                  </span>
+                  <div className="relative z-10">
+                    <h4 className="mb-1.5 text-header">{title}</h4>
+                    <p className="text-sm leading-7 text-txt">{desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Reveal>
 
@@ -1646,13 +1650,13 @@ export default function Home() {
 
               <div className="mt-2 border-t border-white/[0.08] pt-7">
                 <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">Zaprati</p>
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <a href={SERGEJ_IG} target="_blank" rel="noopener noreferrer"
-                    className="gt-cut-sm flex h-16 items-center justify-center gap-2 bg-white/[0.07] text-base font-bold text-white transition hover:bg-theme">
+                    className="gt-cut-sm flex h-16 flex-col items-center justify-center gap-1.5 bg-white/[0.07] text-xs font-bold uppercase tracking-[0.06em] text-white transition hover:bg-theme">
                     <InstagramIcon className="h-5 w-5" /> Instagram
                   </a>
                   <a href={GYM_IG} target="_blank" rel="noopener noreferrer" title="Teretana"
-                    className="gt-cut-sm flex h-16 items-center justify-center gap-2 bg-white/[0.07] text-base font-bold text-white transition hover:bg-theme">
+                    className="gt-cut-sm flex h-16 flex-col items-center justify-center gap-1.5 bg-white/[0.07] text-xs font-bold uppercase tracking-[0.06em] text-white transition hover:bg-theme">
                     <DumbbellIcon className="h-5 w-5" /> Teretana
                   </a>
                 </div>
@@ -1686,14 +1690,14 @@ export default function Home() {
                   <div className="grid gap-5 md:grid-cols-2">
                     <input
                       id="contact-name" name="name" required minLength={2}
-                      className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
+                      className="w-full gt-cut-sm border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
                       placeholder="Ime *"
                       value={form.name}
                       onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                     />
                     <input
                       id="contact-phone" name="phone" type="tel"
-                      className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
+                      className="w-full gt-cut-sm border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
                       placeholder="Telefon (opciono)"
                       value={form.email}
                       onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
@@ -1703,7 +1707,7 @@ export default function Home() {
                   <div className="grid gap-5 md:grid-cols-2">
                     <select
                       id="contact-mode" name="mode"
-                      className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header focus:border-theme"
+                      className="w-full gt-cut-sm border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header focus:border-theme"
                       value={form.mode}
                       onChange={(e) => setForm((p) => ({ ...p, mode: e.target.value as typeof form.mode }))}
                     >
@@ -1712,7 +1716,7 @@ export default function Home() {
                     </select>
                     <select
                       id="contact-goal" name="goal"
-                      className="w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header focus:border-theme"
+                      className="w-full gt-cut-sm border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header focus:border-theme"
                       value={form.goal}
                       onChange={(e) => setForm((p) => ({ ...p, goal: e.target.value as typeof form.goal }))}
                     >
@@ -1726,7 +1730,7 @@ export default function Home() {
 
                   <textarea
                     id="contact-message" name="message" required minLength={10}
-                    className="min-h-[180px] w-full rounded-[14px] border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
+                    className="min-h-[180px] w-full gt-cut-sm border border-gray-200 bg-bg2 px-5 py-4 text-sm text-header placeholder:text-txt/50 focus:border-theme"
                     placeholder="Poruka (iskustvo, ograničenja, termini...) *"
                     value={form.message}
                     onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
