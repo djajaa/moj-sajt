@@ -583,6 +583,23 @@ select:focus {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   CASE STUDY COMPARE — dvije kolone čija se širina mijenja na klik (JS piše
+   --cs-cols), jedna kolona na telefonu bez obzira na tu promjenljivu
+═══════════════════════════════════════════════════════════════════════════ */
+.gt-cs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  transition: grid-template-columns 500ms var(--ease-out-expo);
+}
+@media (min-width: 1024px) {
+  .gt-cs-grid {
+    grid-template-columns: var(--cs-cols, 1fr 1fr);
+    gap: 2rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    AMBIENT ORBS — spora, difuzna atmosfera u pozadini sekcija
 ═══════════════════════════════════════════════════════════════════════════ */
 .gt-orb {

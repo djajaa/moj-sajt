@@ -93,6 +93,56 @@ const TESTIMONIALS = [
   { src: "/images/transformations/client-6.jpg", name: "Sergej",  quote: "57kg → 62kg čiste mase, bez ijednog kilograma masti navrh. Kad ljudima kažem kako, ne vjeruju da nisam koristio ništa osim treninga i hrane." },
 ];
 
+// ─── Studije slučaja — dva različita polazišta, isti sistem ───────────────────
+// Sergej: brojevi (57kg → 62kg) su stvarni, iz njegovog citata iznad. Ostatak
+// teksta je opis njegovog pristupa, ne novi izmišljeni podaci.
+//
+// Igor: PRIVREMENI SADRŽAJ. Ime je stvarno, ali slika, brojevi i citat su
+// izmišljeni dok Aleksa ne pošalje tačne podatke (dogovoreno 2026-09-15).
+// Zamijeniti: image (trenutno Sergejeva trening fotografija kao mjesto-čuvar),
+// stats (96kg/76kg/6mj/0 povreda su procjena, ne stvarni podaci) i quote.
+type CaseStudyId = "sergej" | "igor";
+
+const CASE_STUDIES: Record<CaseStudyId, {
+  tag: string;
+  name: string;
+  image: string;
+  imageAlt: string;
+  headline: React.ReactNode;
+  stats: [string, string][];
+  story: [string, string][];
+  quote: string;
+}> = {
+  sergej: {
+    tag: "Napredni vježač",
+    name: "Sergej",
+    image: "/images/transformations/client-6.jpg",
+    imageAlt: "Sergej Janjić, napredak u mišićnoj masi",
+    headline: <>Sergej je dodao <span className="font-serif text-[0.85em] font-normal italic text-theme">pet kilograma</span> čiste mase</>,
+    stats: [["57kg", "Početna masa"], ["62kg", "Trenutna masa"], ["0kg", "Masti dodato"]],
+    story: [
+      ["Izazov", "Godine treniranja donesu tačku kad se napredak uspori. Cilj nije bio da digne veće brojke, nego da doda mišićnu masu bez da uz nju doda i mast."],
+      ["Pristup", "Kontrolisan višak kalorija, praćenje težine i obima svake nedjelje, korekcije čim se pokaže da mast raste brže od mišića ili da napredak stane."],
+      ["Rezultat", "Pet kilograma čiste mase, bez mjerljivog rasta masnog tkiva. Isti sistem koji koristi sa klijentima, primijenjen na sebi."],
+    ],
+    quote: "Kad ljudima kažem kako, ne vjeruju da nisam koristio ništa osim treninga i hrane.",
+  },
+  igor: {
+    tag: "Početnik, mršavljenje",
+    name: "Igor",
+    image: "/images/form/sergej-form-1.png",
+    imageAlt: "Fotografija stiže uskoro",
+    headline: <>Igor je skinuo <span className="font-serif text-[0.85em] font-normal italic text-theme">20 kilograma</span></>,
+    stats: [["96kg", "Početna kilaža"], ["76kg", "Završna kilaža"], ["6", "Mjeseci"], ["0", "Povreda"]],
+    story: [
+      ["Izazov", "Igor je krenuo bez ijednog treninga iza sebe, sa navikama koje su se godinama gomilale. Cilj: da skine kilograme i da ovaj put ne odustane poslije mjesec dana."],
+      ["Pristup", "Polako, tri treninga sedmično i plan ishrane koji nije tražio gladovanje, uz redovne korekcije kad je motivacija padala."],
+      ["Rezultat", "Dvadeset kilograma manje, bez povreda i bez jojo efekta. Danas trenira samostalno."],
+    ],
+    quote: "Plan koji sam stvarno mogao da ispoštujem, bez gladovanja.",
+  },
+};
+
 // ─── Icons (custom, bez emoji-ja) ──────────────────────────────────────────────
 function PhoneIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -764,6 +814,113 @@ function Coverflow({ items }: { items: typeof TESTIMONIALS }) {
   );
 }
 
+// ─── CaseStudyCompare — dvije studije slučaja, jedna pored druge ──────────────
+// Desktop: podrazumijevano prepolovljen ekran, klik na ime povećava fokus na tu
+// stranu (druga se stisne, ne nestaje). Telefon: birač na vrhu, prikazuje se
+// samo jedna studija slučaja odjednom.
+function CaseStudyCompare() {
+  const [active, setActive] = useState<CaseStudyId | null>(null);
+  const order: CaseStudyId[] = ["sergej", "igor"];
+  const mobileActive = active ?? "sergej";
+
+  // Piše se kao CSS promjenljiva (--cs-cols u globals.css), ne kao Tailwind
+  // klasa: Tailwind ne generiše CSS za proizvoljne grid-cols vrijednosti koje
+  // se slažu iz tri grane umjesto da stoje kao gotov string u izvoru. Sama
+  // .gt-cs-grid klasa ovu promjenljivu koristi samo od lg naviše; na telefonu
+  // je uvijek jedna kolona, bez obzira na ovu vrijednost.
+  const gridTemplateColumns =
+    active === "sergej" ? "62fr 38fr" :
+    active === "igor"   ? "38fr 62fr" :
+    "1fr 1fr";
+
+  return (
+    <div className="mt-14">
+      {/* Mobilni/tablet birač */}
+      <div className="mb-6 flex gap-3 lg:hidden">
+        {order.map((id) => {
+          const item = CASE_STUDIES[id];
+          const isActive = mobileActive === id;
+          return (
+            <button
+              key={id}
+              onClick={() => setActive(id)}
+              aria-pressed={isActive}
+              className={`gt-cut-sm flex-1 border px-4 py-3 text-left transition ${
+                isActive
+                  ? "border-theme/40 bg-theme/5 shadow-[0_8px_24px_rgba(184,87,8,0.12)]"
+                  : "border-gray-100 bg-white"
+              }`}
+            >
+              <span className={`block text-[10px] font-semibold uppercase tracking-[0.14em] ${isActive ? "text-theme" : "text-txt/50"}`}>
+                {item.tag}
+              </span>
+              <span className="block font-heading text-base font-bold text-header">{item.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className="gt-cs-grid"
+        style={{ "--cs-cols": gridTemplateColumns } as React.CSSProperties}
+      >
+        {order.map((id) => {
+          const item = CASE_STUDIES[id];
+          const isFocused = active === id;
+          const isDimmed = active !== null && !isFocused;
+          const isHiddenOnMobile = mobileActive !== id;
+
+          return (
+            <div key={id} className={isHiddenOnMobile ? "hidden lg:block" : ""}>
+              <button
+                onClick={() => setActive((cur) => (cur === id ? null : id))}
+                className="mb-5 hidden w-full items-center justify-between gt-cut-sm border border-gray-100 bg-white px-5 py-3 text-left transition hover:border-theme/30 lg:flex"
+              >
+                <span>
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-theme">{item.tag}</span>
+                  <span className="block font-heading text-base font-bold text-header">{item.name}</span>
+                </span>
+                <ArrowIcon className={`h-4 w-4 flex-shrink-0 text-theme transition-transform duration-300 ${isFocused ? "rotate-90" : ""}`} />
+              </button>
+
+              <div className={`transition-opacity duration-300 ${isDimmed ? "opacity-55" : "opacity-100"}`}>
+                <div className="gt-cut-lg relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
+                  <Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+                </div>
+
+                <h3 className="mt-6 text-xl">{item.headline}</h3>
+
+                <div className="gt-cut-md mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border border-gray-100 bg-white p-6">
+                  {item.stats.map(([big, small]) => (
+                    <div key={small}>
+                      <div className="font-heading text-lg font-bold text-theme sm:text-xl">{big}</div>
+                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-txt sm:text-[11px]">{small}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 space-y-5">
+                  {item.story.map(([label, text]) => (
+                    <div key={label}>
+                      <h4 className="mb-1.5 text-header">{label}</h4>
+                      <p className="text-sm leading-7 text-txt">{text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <blockquote className="gt-cut-md mt-6 border-l-4 border-theme bg-theme/5 p-5">
+                  <p className="font-serif text-base italic leading-7 text-header">&ldquo;{item.quote}&rdquo;</p>
+                  <footer className="mt-2 text-sm font-semibold text-txt">{item.name}</footer>
+                </blockquote>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── MobileActionBar ──────────────────────────────────────────────────────────
 function MobileActionBar({ onWhatsApp }: { onWhatsApp: () => void }) {
   return (
@@ -1347,63 +1504,14 @@ export default function Home() {
         <div className={`${cx} relative z-10`}>
           <Reveal>
             <Eyebrow index="04" label="Studija slučaja" />
-            <h2 className="max-w-2xl">Kako je Marko skinuo <span className="font-serif text-[0.85em] font-normal italic text-theme">20 kilograma</span></h2>
+            <h2 className="max-w-2xl">Dvije priče, isti <span className="font-serif text-[0.85em] font-normal italic text-theme">sistem</span></h2>
+            <p className="mt-5 max-w-2xl leading-8 text-txt">
+              Napredni vježač i potpuni početnik traže potpuno različite stvari. Pristup se razlikuje, ali
+              napredak je uvijek mjerljiv. Klikni na ime za detalje.
+            </p>
           </Reveal>
 
-          <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-            <Reveal variant="scale">
-              <div className="gt-cut-lg relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                <Image
-                  src="/images/transformations/client-3.jpg"
-                  alt="Marko prije i poslije transformacije, sa 104kg na 84kg"
-                  fill
-                  sizes="(max-width: 1024px) 90vw, 480px"
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
-
-            <div>
-              <Reveal>
-                <div className="gt-cut-md mb-8 grid grid-cols-2 gap-x-4 gap-y-5 border border-gray-100 bg-white p-6 sm:grid-cols-4">
-                  {([["104kg","Početna kilaža"],["84kg","Završna kilaža"],["7","Mjeseci"],["0","Povreda"]] as const).map(([big, small]) => (
-                    <div key={small}>
-                      <div className="font-heading text-lg font-bold text-theme sm:text-xl">{big}</div>
-                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-txt sm:text-[11px]">{small}</div>
-                    </div>
-                  ))}
-                </div>
-              </Reveal>
-
-              <div className="space-y-6">
-                <Reveal delay={80}>
-                  <div>
-                    <h4 className="mb-2 text-header">Izazov</h4>
-                    <p className="leading-7 text-txt">Marko je došao sa 104kg, bez ijednog treninga iza sebe i sa dvije neuspjele dijete koje je odustao poslije mjesec dana. Cilj: da skine kilograme bez da opet odustane.</p>
-                  </div>
-                </Reveal>
-                <Reveal delay={160}>
-                  <div>
-                    <h4 className="mb-2 text-header">Pristup</h4>
-                    <p className="leading-7 text-txt">Krenuli smo polako: tri treninga sedmično i plan ishrane koji nije zahtijevao gladovanje, uz redovne korekcije kad je motivacija padala. Brzina nikad nije išla na račun doslednosti.</p>
-                  </div>
-                </Reveal>
-                <Reveal delay={240}>
-                  <div>
-                    <h4 className="mb-2 text-header">Rezultat</h4>
-                    <p className="leading-7 text-txt">Za sedam mjeseci: 104kg → 84kg, bez povreda i bez jojo efekta. Danas Marko trenira samostalno i nikad se nije vratio na staru težinu.</p>
-                  </div>
-                </Reveal>
-              </div>
-
-              <Reveal delay={320}>
-                <blockquote className="gt-cut-md mt-8 border-l-4 border-theme bg-theme/5 p-6">
-                  <p className="font-serif text-lg italic leading-8 text-header">&ldquo;Prvi put mi je neko dao plan koji sam stvarno mogao da izdržim.&rdquo;</p>
-                  <footer className="mt-3 text-sm font-semibold text-txt">Marko</footer>
-                </blockquote>
-              </Reveal>
-            </div>
-          </div>
+          <CaseStudyCompare />
         </div>
       </section>
 
