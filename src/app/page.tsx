@@ -884,8 +884,8 @@ function CaseStudyCompare() {
               </button>
 
               <div className={`transition-opacity duration-300 ${isDimmed ? "opacity-55" : "opacity-100"}`}>
-                <div className="gt-cut-lg relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                  <Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+                <div className="gt-cut-lg relative aspect-[4/5] w-full overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)] lg:mx-auto lg:max-w-[360px]">
+                  <Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 1024px) 90vw, 360px" className="object-cover" />
                 </div>
 
                 <h3 className="mt-6 text-xl">{item.headline}</h3>
