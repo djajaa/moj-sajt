@@ -1343,10 +1343,10 @@ export default function Home() {
               <div className="gt-cut-lg absolute -left-4 -top-4 -z-10 hidden h-full w-full -rotate-3 border border-theme/25 sm:block" aria-hidden="true" />
               <div className="grid grid-cols-2 gap-5">
                 <div className="gt-cut-lg relative aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                  <Image src="/images/form/sergej-form-1.png" alt="Sergej Janjić, personalni trener u Banja Luci, tokom treninga" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
+                  <Image src="/images/form/sergej-form-3.jpg" alt="Sergej Janjić pokazuje rezultat sopstvenog sistema treninga" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
                 </div>
                 <div className="gt-cut-lg-r relative mt-10 aspect-[3/4] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.14)]">
-                  <Image src="/images/form/sergej-form-2.png" alt="Sergej Janjić demonstrira pravilnu tehniku izvođenja vježbe" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
+                  <Image src="/images/form/sergej-form-4.jpg" alt="Sergej Janjić, fizička forma izgrađena istim sistemom koji koristi sa klijentima" fill sizes="(max-width: 768px) 45vw, 320px" className="gt-img-hover object-cover" />
                 </div>
               </div>
               <div className="gt-cut-md relative z-10 -mt-10 ml-5 inline-flex items-center gap-3 bg-theme px-6 py-4 shadow-[0_20px_40px_rgba(252,138,23,0.30)]">
